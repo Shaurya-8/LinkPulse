@@ -1,0 +1,7 @@
+allowBuilds:
+  '@prisma/engines': true
+  bcrypt: true
+  compressor: true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
