@@ -161,9 +161,10 @@ export enum AuditAction {
  * by deviceInfoMiddleware. Passed through to service layer for logging
  * and device upsert.
  */
+
 export interface DeviceInfo {
   /** SHA-256 of ua + os + osVersion + cpu + deviceType + accept-language */
-  fingerprint: DeviceFingerprint;
+  deviceFingerprint: DeviceFingerprint;
   /** Human-readable label, e.g. "Chrome 120 on Windows 11" */
   deviceName: string;
   deviceType: DeviceType;
@@ -254,7 +255,7 @@ export interface TokenPair {
  * Augmented express Request for routes protected by the authenticate middleware.
  * After authenticate runs, `user` is guaranteed to be populated.
  */
-export interface AuthenticatedRequest {
+export interface AuthenticatedRequest extends Request {
   /** Populated by authenticate middleware — undefined on public routes */
   user: {
     id: UserId;
@@ -262,8 +263,6 @@ export interface AuthenticatedRequest {
     refreshToken: RefreshToken;
     sessionId: SessionId;
   };
-  deviceInfo?: DeviceInfo;
-
 }
 
 /**

@@ -1,11 +1,19 @@
 import { prisma } from "../../config/prisma"
-import { DeviceInfo } from "../../types";
+import { DeviceInfo, UserId } from "../../types";
 import { DeviceRepository } from "./device.repository";
 
 const deviceRepository = new DeviceRepository(prisma);
 
-export async function upsertDevice(userId: string, device: DeviceInfo): Promise<string> {
-    const existing = await deviceRepository.findByUserAndFingerprint(userId, device.fingerprint);
+export async function create(device: DeviceInfo, userId: UserId): Promise<string> {
+    const created = await deviceRepository.create({
+        ...device,
+        user: { connect: { id: userId } }
+    });
+    return created.id;
+}
+
+export async function upsertDevice(userId: UserId, device: DeviceInfo): Promise<string> {
+    const existing = await deviceRepository.findByUserAndFingerprint(userId, device.deviceFingerprint);
 
     if (existing) {
         const updated = await deviceRepository.update(existing.id, {
@@ -15,18 +23,5 @@ export async function upsertDevice(userId: string, device: DeviceInfo): Promise<
         })
         return updated.id;
     }
-
-    const created = await deviceRepository.create({
-        user: { connect: { id: userId } },
-        deviceFingerprint: device.fingerprint,
-        deviceName: device.deviceName,
-        deviceType: device.deviceType,
-        os: device.os,
-        osVersion: device.osVersion,
-        browser: device.browser,
-        browserVersion: device.browserVersion,
-        cpu: device.cpu,
-
-    });
-    return created.id;
+    return await create(device, userId);
 }

@@ -4,7 +4,6 @@ declare global {
         interface Request {
             deviceInfo?: DeviceInfo;
             user?: {
-
                 id: UserId;
                 email: string;
                 refreshToken: RefreshToken;

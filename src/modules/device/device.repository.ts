@@ -1,8 +1,8 @@
-import { PrismaClient, Prisma, UserDevice } from "../../../generated/prisma/client";
+import { Prisma, UserDevice } from "../../../generated/prisma/client";
+import { DbClient } from "../../config/prisma";
 import { DeviceFingerprint } from "../../types";
-
 export class DeviceRepository {
-    constructor(private readonly db: PrismaClient) { }
+    constructor(private readonly db: DbClient) { }
 
     async findByUserAndFingerprint(
         userId: string,

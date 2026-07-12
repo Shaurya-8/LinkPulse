@@ -3,7 +3,7 @@ import { extractAccessToken } from "../common/utils/cookies";
 import { UnauthorizedError } from "../common/errors/AppError";
 import { config } from "../config";
 import { verifyToken } from "../common/utils/jwt";
-import { AuthenticatedRequest } from "../modules/auth/auth.types";
+import { AuthenticatedRequest } from "../types";
 import { RefreshToken, SessionId, UserId } from "../types";
 import { JwtAccessPayload } from "../types";
 import { cache, cacheKeys } from "../config/redis";

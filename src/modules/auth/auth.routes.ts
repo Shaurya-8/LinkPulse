@@ -30,24 +30,10 @@ authRouter.post("/logout",
     controller.logout
 );
 
-// authRouter.post("/forgot-password",
-//     authenticate,
-//     rateLimiter.passwordResetRateLimiter(),
-//     rateLimiter.progressiveDelay(),
-//     validate(schema.forgotPasswordSchema, "body"),
-//     controller.forgotPassword
-// );
-
 authRouter.post("/send-reset-password-email",
     authenticate,
     validate(schema.sendResetPasswordEmailSchema, "body"),
-    controller.sendResetPasswordEmail
-);
-authRouter.post("/reset-password",
-    authenticate,
-    rateLimiter.passwordResetRateLimiter(),
-    rateLimiter.progressiveDelay(),
-    controller.resetPassword
+    controller.resetPasswordRequest
 );
 
 authRouter.delete("/delete-user",
@@ -56,4 +42,4 @@ authRouter.delete("/delete-user",
     controller.deleteUser
 );
 
-export { authRouter }
+export { authRouter };

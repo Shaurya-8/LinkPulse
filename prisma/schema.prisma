@@ -45,7 +45,18 @@ enum AuditAction{
   RATE_LIMIT_HIT
 }
 
+//plan enum
+enum PlanType {
+  FREE
+  PRO
+  ENTERPRISE
+}
 
+enum PeriodType{
+  NO
+  MONTHLY
+  YEARLY
+}
 
 model User {
   id            String      @id @default(uuid()) @db.Uuid
@@ -72,6 +83,7 @@ model User {
   devices       UserDevice[]
   auditLogs     AuditLog[]
   passwordResets PasswordResetToken[]
+  subscriptions Subscriptions[] 
   links         Link[]
 
   @@index([email])
@@ -82,8 +94,6 @@ model User {
 
   @@map("users") 
 }
-
-
 
 model Session {
   id            String      @id @default(uuid()) @db.Uuid
@@ -168,7 +178,6 @@ model UserDevice {
   @@map("user_devices")
 }
 
-
 model AuditLog {
   id            String      @id @default(uuid()) @db.Uuid
   userId        String?     @map("user_id") @db.Uuid
@@ -218,10 +227,10 @@ model Link {
   totalClicks   Int       @default(0)@map("total_clicks")
   clickLimit    Int       @default(0) @map("click_limit")
   userId        String?   @map("user_id") @db.Uuid
+  deviceId      String
 
   user          User?     @relation (fields: [userId], references: [id], onDelete: SetNull)  
 
-  deviceId      String
   device        UserDevice @relation (fields: [deviceId], references: [id], onDelete: Cascade)
   clicks        LinkClick[]
 
@@ -231,7 +240,6 @@ model Link {
   @@index([createdAt])
 
   @@map("links")
-
 }
 
 model LinkClick {
@@ -256,3 +264,58 @@ model LinkClick {
   @@map("link_clicks")
 }
 
+model Plans {
+  id            string        @id @default(uuid()) @db.Uuid
+  name          PlanType      @default(FREE)
+  price         Int           @default(0)
+
+  featuresLimit      FeaturesLimit[]
+  subscriptions      Subscriptions[]
+
+  @@map(plans)
+}
+
+model Features {
+  id            String        @id @default(uuid()) @db.Uuid
+  key           String        
+  name          String 
+
+  featuresLimit FeaturesLimit[]
+  @@map(features)       
+}
+
+model FeaturesLimit {
+  id            String        @id @default(uuid()) @db.Uuid
+  featureId     String        @map(feature_id)
+  planId        String        @map(plan_id)
+  value         Int            //-1 = unlimited
+
+  features      Features      @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  plans         Plans         @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map(feature_limit)
+}
+
+enum SubscriptionStatus{
+  ACTIVE
+  INACTIVE
+}
+
+enum BillingPeriod{
+  MONTHLY 
+  YEARLY
+}
+
+model Subscriptions {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map(user_id) @map(user_id)
+  planId      String        @map(plan_id) @map(Plan_id)
+  status      Subscriptions @default(INACTIVE)        
+  startedAt   DateTime      @default(now()) @map(started_at)
+  expriresAt  DateTime      @map(expires_at)
+  billingPeriod  String        @default(MONTHLY) @map(billing_period)
+
+  plan        String        @relation(fields:[planId], references: [id], onDelete: Cascade)
+  user        String        @relation(fields:[userId], references: [id], onDelete: Cascade)
+  @@map(subscriptions)
+}
