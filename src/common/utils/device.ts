@@ -64,13 +64,13 @@ export function extractDeviceInfo(req: Request): DeviceInfo {
     deviceType,
   ].join('|');
 
-  const fingerprint = crypto
+  const deviceFingerprint = crypto
     .createHash('sha256')
     .update(fingerprintInput)
     .digest('hex') as DeviceFingerprint;
 
   return {
-    fingerprint,
+    deviceFingerprint,
     deviceName,
     deviceType,
     os,

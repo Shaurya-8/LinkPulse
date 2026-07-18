@@ -1,7 +1,7 @@
 import { v4 as uuid4 } from "uuid";
 
-import { UserStatus } from "../../../generated/prisma/enums";
-import { prisma } from "../../config/prisma";
+import { BillingPeriod, PlanType, UserStatus } from "../../../generated/prisma/enums";
+import { DbClient, prisma } from "../../config/prisma";
 
 import { config } from "../../config";
 import { cache, cacheKeys } from "../../config/redis"
@@ -31,7 +31,7 @@ import {
     hashToken,
 } from "../../common/utils/crypto";
 
-import { UserRepository } from "./auth.repository"
+import { authUserSelect, UserRepository } from "./auth.repository"
 
 import * as otpService from "../otp/otp.service";
 import * as sessionService from "./session/session.service"
@@ -40,7 +40,7 @@ import { upsertDevice } from "../device/device.service"
 import { otpTemplateFactory } from "../email/email.template";
 
 import { enqueueEmail } from "../../jobs/queues";
-import { email } from "zod";
+import { SubscriptionService } from "../subscription/subscription.service";
 const db = new UserRepository(prisma);
 
 export async function sendVerificationEmail(email: string): Promise<string> {
@@ -60,21 +60,21 @@ export async function sendVerificationEmail(email: string): Promise<string> {
 
 
 
-async function activeSession(user: AuthUser, device: DeviceInfo) {
+async function activeSession(user: AuthUser, device: DeviceInfo, tx?: DbClient) {
     const sessionId = uuid4() as SessionId
     const tokens = generateTokenPair(user.id as UserId, user.email, sessionId);
-
+    const accesToken: AccessToken = tokens.accessToken;
     /**
      * create userDevice or update if already exist
      */
 
-    const deviceId = await upsertDevice(user.id, device)
+    const deviceId = await upsertDevice(user.id as UserId, device, tx);
 
     const jti = JSON.parse(
-        Buffer.from(tokens.accessToken.split('.')[1], 'base64').toString()
+        Buffer.from(accesToken.split('.')[1]!, 'base64').toString()
     ).jti;
 
-    await sessionService.create(user.id as UserId, deviceId, tokens, device, jti, sessionId);
+    await sessionService.create(user.id as UserId, deviceId, tokens, device, jti, sessionId, tx);
     logger.info('Session created', { userId: user.id });
 
     void cache.set(cacheKeys.userById(user.id as UserId), user, parseInt(config.jwt.refreshExpires, 10) * 24 * 60 * 60);
@@ -98,7 +98,7 @@ async function activeSession(user: AuthUser, device: DeviceInfo) {
 export async function register(dto: RegisterDto): Promise<RegisterResult> {
     const { email, firstName, lastName, password } = dto;
 
-    const exist = await db.getByEmail(dto.email);
+    const exist = await db.findFirst({ where: { email: dto.email } });
 
     /** 
      * check if user already exist or blocked
@@ -122,7 +122,9 @@ export async function register(dto: RegisterDto): Promise<RegisterResult> {
     if (exist && (!exist.emailVerified || exist.status === UserStatus.PENDING)) {
         await db.updatePassword(email, passwordHash);
     } else {
-        await db.createUser({ email, firstName, lastName, passwordHash, });
+        await db.create({
+            data: { email, firstName, lastName, passwordHash, },
+        });
     }
 
     /**
@@ -152,26 +154,38 @@ export async function register(dto: RegisterDto): Promise<RegisterResult> {
     }
 }
 
+export async function registerGuest(device: DeviceInfo): Promise<String> {
+    return 'userId' as UserId
+
+}
+
 export async function verifyEmail(requestId: string, device: DeviceInfo): Promise<OtpVerifyResult> {
 
     const otpSessionData = await cache.get<OtpSession<{ email: string }>>(cacheKeys.otpSessionData(requestId))
 
-    if (!otpSessionData || !otpSessionData.recipient) throw new BadRequestError("Verification session expired. Please register again."); //throw error if timeout
+    if (!otpSessionData || !otpSessionData.recipient) {
+        throw new BadRequestError("Verification session expired. Please register again."); //throw error if timeout
+    }
+    const subscriptionService = new SubscriptionService();
+    const result = prisma.$transaction(async (tx) => {
+        const user = await db.verifyEmail(otpSessionData.recipient, tx);
 
-    const user = await db.verifyEmail(otpSessionData.recipient);
+        await subscriptionService.buySubscription(user.id as UserId, PlanType.FREE, BillingPeriod.MONTHLY, tx);
 
+        return await activeSession({
+            ...user,
+            id: user.id as UserId,
+        }, device, tx);
+    });
     void cache.del(cacheKeys.otpSessionData(requestId));
 
-    return activeSession({
-        ...user,
-        id: user.id as UserId,
-    }, device);
+    return result;
 }
 
 
 
 export async function login(dto: LoginDto, device: DeviceInfo): Promise<LoginResult> {
-    const user = await db.getByEmail(dto.email);
+    const user = await db.findFirst({ where: { email: dto.email } });
 
     if (!user) throw new NotFoundError('user');
 
@@ -186,11 +200,12 @@ export async function login(dto: LoginDto, device: DeviceInfo): Promise<LoginRes
     if (!isPasswordValid) {
         throw new BadRequestError("Incorrect password");
     }
-
-    return activeSession({
-        ...user,
-        id: user.id as UserId,
-    }, device);
+    return prisma.$transaction(async (tx) => {
+        return activeSession({
+            ...user,
+            id: user.id as UserId,
+        }, device, tx);
+    })
 }
 
 interface resetPasswordOtpSesssion {
@@ -296,7 +311,7 @@ export async function refreshToken(refreshToken: RefreshToken, device: DeviceInf
     const tokenHash = hashToken(tokens.refreshToken);
 
     const jti = JSON.parse(
-        Buffer.from(tokens.accessToken.split('.')[1], 'base64').toString()).jti
+        Buffer.from(tokens.accessToken.split('.')[1]!, 'base64').toString()).jti
 
     const user = await sessionService.updateRefreshtoken(sessionId, tokenHash, jti);
     // Audit device
@@ -309,7 +324,7 @@ export async function refreshToken(refreshToken: RefreshToken, device: DeviceInf
 }
 
 export async function deleteUser(dto: DeleteDto): Promise<string> {
-    const user = await db.getByEmail(dto.email);
+    const user = await db.findFirst({ where: { email: dto.email } });
 
     if (!user) throw new NotFoundError("user not found");
 
@@ -319,18 +334,18 @@ export async function deleteUser(dto: DeleteDto): Promise<string> {
     }
 
     const allActiveSessions = await prisma.$transaction(async (tx) => {
-        const activeSessions = await tx.session.findMany({
+        const activeSessions = await tx.sessions.findMany({
             where: { userId: user.id, isActive: true },
             select: { id: true, accessJti: true }
         });
 
-        await tx.user.update({
+        await tx.users.update({
             where: { id: user.id },
             data: {
                 status: UserStatus.DELETED
             }
         })
-        await tx.session.updateMany({
+        await tx.sessions.updateMany({
             where: { userId: user.id, isActive: true },
             data: { isActive: false, revokedAt: new Date() }
         });

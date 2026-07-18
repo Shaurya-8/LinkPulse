@@ -16,12 +16,12 @@ import { fileURLToPath } from 'node:url'
 globalThis['__dirname'] = path.dirname(fileURLToPath(import.meta.url))
 
 import * as runtime from "@prisma/client/runtime/client"
-import * as $Enums from "./enums.ts"
-import * as $Class from "./internal/class.ts"
-import * as Prisma from "./internal/prismaNamespace.ts"
+import * as $Enums from "./enums"
+import * as $Class from "./internal/class"
+import * as Prisma from "./internal/prismaNamespace"
 
-export * as $Enums from './enums.ts'
-export * from "./enums.ts"
+export * as $Enums from './enums'
+export * from "./enums"
 /**
  * ## Prisma Client
  * 
@@ -31,8 +31,8 @@ export * from "./enums.ts"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Countries
+ * const countries = await prisma.countries.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,37 +42,72 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model User
+ * Model Countries
  * 
  */
-export type User = Prisma.UserModel
+export type Countries = Prisma.CountriesModel
 /**
- * Model Session
+ * Model Cities
  * 
  */
-export type Session = Prisma.SessionModel
+export type Cities = Prisma.CitiesModel
+/**
+ * Model Users
+ * 
+ */
+export type Users = Prisma.UsersModel
+/**
+ * Model Sessions
+ * 
+ */
+export type Sessions = Prisma.SessionsModel
 /**
  * Model PasswordResetToken
  * 
  */
 export type PasswordResetToken = Prisma.PasswordResetTokenModel
 /**
- * Model UserDevice
+ * Model UserDevices
  * 
  */
-export type UserDevice = Prisma.UserDeviceModel
+export type UserDevices = Prisma.UserDevicesModel
 /**
- * Model AuditLog
+ * Model AuditLogs
  * 
  */
-export type AuditLog = Prisma.AuditLogModel
+export type AuditLogs = Prisma.AuditLogsModel
 /**
- * Model Link
+ * Model Links
  * 
  */
-export type Link = Prisma.LinkModel
+export type Links = Prisma.LinksModel
 /**
- * Model LinkClick
+ * Model LinkClicks
  * 
  */
-export type LinkClick = Prisma.LinkClickModel
+export type LinkClicks = Prisma.LinkClicksModel
+/**
+ * Model Plans
+ * 
+ */
+export type Plans = Prisma.PlansModel
+/**
+ * Model PlanPrices
+ * 
+ */
+export type PlanPrices = Prisma.PlanPricesModel
+/**
+ * Model Subscriptions
+ * 
+ */
+export type Subscriptions = Prisma.SubscriptionsModel
+/**
+ * Model FeatureLimits
+ * 
+ */
+export type FeatureLimits = Prisma.FeatureLimitsModel
+/**
+ * Model FeatureLimitUsages
+ * 
+ */
+export type FeatureLimitUsages = Prisma.FeatureLimitUsagesModel

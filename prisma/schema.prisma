@@ -45,20 +45,63 @@ enum AuditAction{
   RATE_LIMIT_HIT
 }
 
+
+//Features
+enum FeatureKey {
+  CREATE_LINK
+  CUSTOM_ALIAS
+  PASSWORD_PROTECTION
+  LINK_EXPIRATION
+  ONE_TIME_LINKS
+  QR_CODE
+  CUSTOM_DOMAIN
+}
+
+
 //plan enum
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  TRIAL
+  PAUSED
+}
+
 enum PlanType {
   FREE
   PRO
   ENTERPRISE
 }
 
-enum PeriodType{
-  NO
+enum BillingPeriod{
   MONTHLY
   YEARLY
 }
 
-model User {
+
+model Countries {
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String        
+  code          String        @unique @db.VarChar(2)
+  city          Cities[]
+
+
+}
+
+model Cities {
+  id            String        @id @default(uuid()) @db.Uuid
+  countryId     String        @db.Uuid @map("country_id")
+  city          String     
+
+  country       Countries     @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  
+  clicks        LinkClicks[]
+  session      Sessions[]
+
+@@index([countryId,city])
+}
+
+model Users {
   id            String      @id @default(uuid()) @db.Uuid
   email         String      @unique @db.VarChar(255)
   passwordHash  String      @map("password_hash") @db.Text
@@ -79,46 +122,46 @@ model User {
   updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt     DateTime?   @map("deleted_at") @db.Timestamptz 
 
-  sessions      Session[]
-  devices       UserDevice[]
-  auditLogs     AuditLog[]
+  sessions      Sessions[]
+  devices       UserDevices[]
+  auditLogs     AuditLogs[]
   passwordResets PasswordResetToken[]
   subscriptions Subscriptions[] 
-  links         Link[]
+  links         Links[]
 
-  @@index([email])
   @@index([status])
   @@index([createdAt])
   @@index([deletedAt])
   @@index([lastLoginAt])
+  @@index([status, createdAt])
 
   @@map("users") 
 }
 
-model Session {
+model Sessions {
   id            String      @id @default(uuid()) @db.Uuid
   userId        String      @map("user_id") @db.Uuid
   deviceId      String?     @map("device_id") @db.Uuid
+  ipAddress String? @db.VarChar(45)  
 
   refreshToken  String      @unique @map("refresh_token") @db.Char(64)
   accessJti     String      @unique @map("access_jti") @db.Uuid
 
-  ipAddress     String?     @map("ip_address") @db.VarChar(45)
   userAgent     String?     @map("user_agent") @db.VarChar(512)
-  country       String?     @db.VarChar(2)
-  city          String?     @db.VarChar(100)
+  
+  cityId        String?     @db.Uuid
 
   isActive      Boolean     @default(true) @map("is_active")
   expiresAt     DateTime    @map("expires_at") @db.Timestamptz
   lastUsedAt    DateTime    @default(now()) @map("last_used_at") @db.Timestamptz
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz 
   revokedAt     DateTime?   @map("revoked_at") @db.Timestamptz   
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  device        UserDevice? @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  user          Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device        UserDevices? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+  city          Cities?      @relation(fields: [cityId], references: [id], onDelete: SetNull)
 
-  
+  @@index([userId, isActive, expiresAt])
   @@index([userId, isActive])
-  @@index([accessJti])
   @@index([expiresAt])
   @@index([lastUsedAt])
 
@@ -134,20 +177,21 @@ model PasswordResetToken {
   ipAddress  String?   @map("ip_address") @db.VarChar(45)
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
+  @@index([tokenHash, usedAt, expiresAt])
 
   @@map("password_reset_tokens")
 }
 
 
-model UserDevice {
+model UserDevices {
   id            String      @id @default(uuid()) @db.Uuid
   userId        String      @map("user_id") @db.Uuid
 
-  deviceFingerprint String  @unique @map("device_fingerprint") @db.Char(64)
+  deviceFingerprint String  @map("device_fingerprint") @db.Char(64)
   ipAddress     String?
 
   deviceName    String?     @map("device_name") @db.VarChar(200)
@@ -157,6 +201,7 @@ model UserDevice {
   browser       String?     @db.VarChar(100)
   browserVersion String?    @map("browser_version") @db.VarChar(20)
   cpu           String?     @db.VarChar(50)
+  userAgent     String?     @map("user_agent") @db.VarChar(512)
 
   isTrusted     Boolean     @default(false) @map("is_trusted")
   isPushEnabled Boolean     @default(false) @map("is_push_enabled")
@@ -169,16 +214,17 @@ model UserDevice {
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamptz
 
-  user          User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          Users?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  sessions      Session[]
-  like          Link[]
+  sessions      Sessions[]
   @@unique([userId, deviceFingerprint])
+
+  @@index([lastSeenAt])
 
   @@map("user_devices")
 }
 
-model AuditLog {
+model AuditLogs {
   id            String      @id @default(uuid()) @db.Uuid
   userId        String?     @map("user_id") @db.Uuid
   action        AuditAction 
@@ -193,7 +239,7 @@ model AuditLog {
   durationMs    Int?        @map("duration_ms")  // request processing time in ms
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz
 
-  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user       Users?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId,    createdAt(sort: Desc)])
   @@index([action,    createdAt(sort: Desc)])
@@ -204,7 +250,7 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-model Link {
+model Links {
   id            String    @id @default(uuid()) @db.Uuid
   shortCode     String    @unique @map("short_code")
   customAlias   String?   @unique @map("custom_alias")
@@ -223,18 +269,18 @@ model Link {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
+  clickCount    Int       @default(0)
+
   passwordHash  String?   @map("password_hash")    
-  totalClicks   Int       @default(0)@map("total_clicks")
   clickLimit    Int       @default(0) @map("click_limit")
-  userId        String?   @map("user_id") @db.Uuid
-  deviceId      String
+  userId        String    @map("user_id") @db.Uuid
 
-  user          User?     @relation (fields: [userId], references: [id], onDelete: SetNull)  
-
-  device        UserDevice @relation (fields: [deviceId], references: [id], onDelete: Cascade)
-  clicks        LinkClick[]
+  user          Users       @relation (fields: [userId], references: [id], onDelete: Cascade)
+  
+  clicks        LinkClicks[]
 
   @@index([expiresAt, isActive])
+  @@index([userId, isActive, expiresAt])
   @@index([expiresAt])
   @@index([userId])
   @@index([createdAt])
@@ -242,80 +288,120 @@ model Link {
   @@map("links")
 }
 
-model LinkClick {
+model LinkClicks {
   id          String      @id @default(uuid()) @db.Uuid
   linkId      String      @map("link_id") @db.Uuid
   ipAddress   String?     @map("ip_address") @db.VarChar(45)
   userAgent   String?     @map("user_agent") @db.VarChar(512)
   referer     String?
-  country     String?     @db.VarChar(2)
-  city        String?
+  cityId      String?     @db.Uuid @map("city_id")
   deviceType  DeviceType  @default(UNKNOWN) @map("device_type")
   browser     String?     @db.VarChar(100)
   os          String?     @db.VarChar(100)
   clickedAt   DateTime    @default(now())
   isBot       Boolean     @default(false)
 
-  link Link @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  city        Cities?       @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  link        Links       @relation(fields: [linkId], references: [id], onDelete: Cascade)
   
   @@index([clickedAt])
   @@index([linkId, clickedAt(sort: Desc)])
-
+  @@index([linkId, isBot, clickedAt(sort: Desc)])
   @@map("link_clicks")
 }
 
 model Plans {
-  id            string        @id @default(uuid()) @db.Uuid
-  name          PlanType      @default(FREE)
-  price         Int           @default(0)
+  id        String   @id @default(uuid()) @db.Uuid
+  name      PlanType @unique
 
-  featuresLimit      FeaturesLimit[]
-  subscriptions      Subscriptions[]
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  @@map(plans)
+  prices         PlanPrices[]
+  featureLimits  FeatureLimits[]
+  subscriptions  Subscriptions[]
+
+  @@map("plans")
 }
 
-model Features {
-  id            String        @id @default(uuid()) @db.Uuid
-  key           String        
-  name          String 
+model PlanPrices {
+  id             String          @id @default(uuid()) @db.Uuid
 
-  featuresLimit FeaturesLimit[]
-  @@map(features)       
-}
+  planId         String          @db.Uuid @map("plan_id")
 
-model FeaturesLimit {
-  id            String        @id @default(uuid()) @db.Uuid
-  featureId     String        @map(feature_id)
-  planId        String        @map(plan_id)
-  value         Int            //-1 = unlimited
+  billingPeriod  BillingPeriod   @map("billing_period")
+  price          Decimal         @db.Decimal(10,2)
+  currency       String          @default("USD") @db.VarChar(3)
 
-  features      Features      @relation(fields: [featureId], references: [id], onDelete: Cascade)
-  plans         Plans         @relation(fields: [planId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz
 
-  @@map(feature_limit)
-}
+  plan           Plans           @relation(fields: [planId], references: [id], onDelete: Cascade)
 
-enum SubscriptionStatus{
-  ACTIVE
-  INACTIVE
-}
+  subscriptions  Subscriptions[]
 
-enum BillingPeriod{
-  MONTHLY 
-  YEARLY
+  @@unique([planId, billingPeriod])
+  @@index([planId])
+  @@map("plan_prices")
 }
 
 model Subscriptions {
-  id          String        @id @default(uuid()) @db.Uuid
-  userId      String        @map(user_id) @map(user_id)
-  planId      String        @map(plan_id) @map(Plan_id)
-  status      Subscriptions @default(INACTIVE)        
-  startedAt   DateTime      @default(now()) @map(started_at)
-  expriresAt  DateTime      @map(expires_at)
-  billingPeriod  String        @default(MONTHLY) @map(billing_period)
+  id             String               @id @default(uuid()) @db.Uuid
 
-  plan        String        @relation(fields:[planId], references: [id], onDelete: Cascade)
-  user        String        @relation(fields:[userId], references: [id], onDelete: Cascade)
-  @@map(subscriptions)
+  userId         String               @db.Uuid @map("user_id")
+  planId         String               @db.Uuid @map("plan_id")
+  planPriceId    String?              @db.Uuid @map("plan_price_id")
+
+  status         SubscriptionStatus   @default(ACTIVE)
+
+  startedAt      DateTime             @default(now()) @map("started_at") @db.Timestamptz
+  expiresAt      DateTime?            @map("expires_at") @db.Timestamptz
+  cancelledAt    DateTime?            @map("cancelled_at") @db.Timestamptz
+
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime             @updatedAt @map("updated_at") @db.Timestamptz
+
+  user           Users                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan           Plans                @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  planPrice      PlanPrices?          @relation(fields: [planPriceId], references: [id])
+
+  featureUsage   FeatureLimitUsages[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([planId])
+  @@index([planPriceId])
+  @@map("subscriptions")
+}
+
+model FeatureLimits {
+  id            String      @id @default(uuid()) @db.Uuid
+
+  planId        String      @db.Uuid @map("plan_id")
+  featureKey    FeatureKey
+  limitValue    Int
+
+  plan          Plans       @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureKey])
+  @@index([planId])
+  @@map("feature_limits")
+}
+
+model FeatureLimitUsages {
+  id               String          @id @default(uuid()) @db.Uuid
+
+  subscriptionId   String          @db.Uuid @map("subscription_id")
+  featureKey       FeatureKey      @map("feature_key")
+
+  currentUsed      Int             @default(0) @map("current_used")
+
+  subscription     Subscriptions   @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, featureKey])
+  @@index([subscriptionId])
+  @@map("feature_limit_usages")
 }

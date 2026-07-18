@@ -13,42 +13,77 @@
  * 🟢 You can import this file directly.
  */
 
-import * as Prisma from './internal/prismaNamespaceBrowser.ts'
+import * as Prisma from './internal/prismaNamespaceBrowser'
 export { Prisma }
-export * as $Enums from './enums.ts'
-export * from './enums.ts';
+export * as $Enums from './enums'
+export * from './enums';
 /**
- * Model User
+ * Model Countries
  * 
  */
-export type User = Prisma.UserModel
+export type Countries = Prisma.CountriesModel
 /**
- * Model Session
+ * Model Cities
  * 
  */
-export type Session = Prisma.SessionModel
+export type Cities = Prisma.CitiesModel
+/**
+ * Model Users
+ * 
+ */
+export type Users = Prisma.UsersModel
+/**
+ * Model Sessions
+ * 
+ */
+export type Sessions = Prisma.SessionsModel
 /**
  * Model PasswordResetToken
  * 
  */
 export type PasswordResetToken = Prisma.PasswordResetTokenModel
 /**
- * Model UserDevice
+ * Model UserDevices
  * 
  */
-export type UserDevice = Prisma.UserDeviceModel
+export type UserDevices = Prisma.UserDevicesModel
 /**
- * Model AuditLog
+ * Model AuditLogs
  * 
  */
-export type AuditLog = Prisma.AuditLogModel
+export type AuditLogs = Prisma.AuditLogsModel
 /**
- * Model Link
+ * Model Links
  * 
  */
-export type Link = Prisma.LinkModel
+export type Links = Prisma.LinksModel
 /**
- * Model LinkClick
+ * Model LinkClicks
  * 
  */
-export type LinkClick = Prisma.LinkClickModel
+export type LinkClicks = Prisma.LinkClicksModel
+/**
+ * Model Plans
+ * 
+ */
+export type Plans = Prisma.PlansModel
+/**
+ * Model PlanPrices
+ * 
+ */
+export type PlanPrices = Prisma.PlanPricesModel
+/**
+ * Model Subscriptions
+ * 
+ */
+export type Subscriptions = Prisma.SubscriptionsModel
+/**
+ * Model FeatureLimits
+ * 
+ */
+export type FeatureLimits = Prisma.FeatureLimitsModel
+/**
+ * Model FeatureLimitUsages
+ * 
+ */
+export type FeatureLimitUsages = Prisma.FeatureLimitUsagesModel

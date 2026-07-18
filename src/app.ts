@@ -1,19 +1,21 @@
 import express from "express";
-import type { Application, Request, Response } from "express";
+import type { Application, NextFunction, Request, Response } from "express";
 import helmet from "helmet"
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan"
 
-import { config } from "./config/index.ts";
+import { config } from "./config/index";
 import { logger } from "./common/utils/logger";
 
-import { authRouter } from "./modules/auth/auth.routes.ts";
 
-import { globalRateLimiter } from "./middleware/rate-limiter.middleware.ts";
-import { deviceInfoMiddleware } from "./middleware/deviceInfo.middleware.ts";
+import { globalRateLimiter } from "./middleware/rate-limiter.middleware";
+import { deviceInfoMiddleware } from "./middleware/deviceInfo.middleware";
 
-import {otpRouter} from "./modules/otp/otp.router.ts";
+import { authRouter } from "./modules/auth/auth.routes";
+import { otpRouter } from "./modules/otp/otp.router";
+import { linkRouter } from "./modules/links/links.router";
+import { redirect } from "./modules/links/links.controller";
 
 
 export async function createApp(): Promise<Application> {
@@ -31,6 +33,13 @@ export async function createApp(): Promise<Application> {
         )
     );
     // redirect link api
+
+    app.get('/s/:shortCode', (req: Request, res: Response, next: NextFunction) => {
+        console.log(req.method, req.path);
+        next()
+    },
+        redirect
+    )
 
     app.set('trust-proxy', 1);
 
@@ -114,8 +123,7 @@ export async function createApp(): Promise<Application> {
     // auth Api
     app.use("/api/v1/auth", authRouter);
     app.use("/api/v1/otp", otpRouter);
-
-
+    app.use("/api/v1/link", linkRouter);
 
     return app;
 } 

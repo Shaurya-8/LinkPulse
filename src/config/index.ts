@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { linkExpireAt } from '../modules/links/utils';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -148,7 +147,9 @@ export const config = {
 
     link: {
         linkExpireYear: optionalEnv('LINK_EXPIRE_Year', '5y'),
-        maxRetry: intEnv('MAX_RETRY', 5)
+        maxRetry: intEnv('MAX_RETRY', 5),
+
+        ttl: intEnv('LINK_TTL',30*60)
     }
 
 };
@@ -163,3 +164,4 @@ export type Email = typeof config.Email;
 export type security = typeof config.security;
 export type session = typeof config.session;
 export type cleanup = typeof config.cleanup;
+export type link = typeof config.link;

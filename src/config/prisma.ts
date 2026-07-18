@@ -52,4 +52,4 @@ export async function disconnectdb(): Promise<void> {
 
 
 export type DbClient =
-    PrismaClient | Prisma.TransactionClient;
+    Prisma.TransactionClient | PrismaClient;

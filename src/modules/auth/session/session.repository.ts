@@ -11,23 +11,21 @@ export const sessionWithUserSelect = {
     user: {
         select: authUserSelect,
     },
-} satisfies Prisma.SessionSelect;
+} satisfies Prisma.SessionsSelect;
 
-export type SessionWithUser = Prisma.SessionGetPayload<{
+export type SessionsWithUser = Prisma.SessionsGetPayload<{
     select: typeof sessionWithUserSelect;
 }>;
 
 
 
 
-
-
-export class SessionRepository {
+export class SessionsRepository {
     constructor(private readonly db: DbClient) { }
 
 
-    create(data: Prisma.SessionCreateInput) {
-        return this.db.session.create({ data });
+    create(data: Prisma.SessionsCreateInput, tx: DbClient = this.db) {
+        return tx.sessions.create({ data });
     }
 
     /**
@@ -35,8 +33,8 @@ export class SessionRepository {
      * @param userId 
      * @returns number
      */
-    countActive(userId: UserId) {
-        return this.db.session.count({
+    countActive(userId: UserId, tx: DbClient = this.db) {
+        return tx.sessions.count({
             where: {
                 userId,
                 isActive: true,
@@ -44,16 +42,16 @@ export class SessionRepository {
         });
     }
 
-    get(refreshToken: RefreshToken) {
-        return this.db.session.findFirst({
+    get(refreshToken: RefreshToken, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: {
                 refreshToken
             },
         })
     }
 
-    getWithUser(refreshToken: string) {
-        return this.db.session.findFirst({
+    getWithUser(refreshToken: string, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: {
                 refreshToken
             },
@@ -61,22 +59,22 @@ export class SessionRepository {
         })
     }
 
-    getById(id: string) {
-        return this.db.session.findFirst({
+    getById(id: string, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: { id }
         })
     }
 
-    getByIdWithUser(id: string) {
-        return this.db.session.findFirst({
+    getByIdWithUser(id: string, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: { id },
             select: sessionWithUserSelect
         })
     }
 
 
-    getByAccessJti(accessJti: string, userId?: UserId) {
-        return this.db.session.findFirst({
+    getByAccessJti(accessJti: string, userId?: UserId, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: {
                 accessJti,
                 userId,
@@ -85,8 +83,8 @@ export class SessionRepository {
         })
     }
 
-    getByAccessJtiWithUser(accessJti: string, userId?: UserId) {
-        return this.db.session.findFirst({
+    getByAccessJtiWithUser(accessJti: string, userId?: UserId, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: {
                 accessJti,
                 userId,
@@ -96,15 +94,15 @@ export class SessionRepository {
         })
     }
 
-    getAllActive(userId: UserId) {
-        return this.db.session.findMany({
+    getAllActive(userId: UserId, tx: DbClient = this.db) {
+        return tx.sessions.findMany({
             where: { userId, isActive: true },
             select: { id: true, accessJti: true }
         })
     }
 
-    getOldestActive(userId: UserId) {
-        return this.db.session.findFirst({
+    getOldestActive(userId: UserId, tx: DbClient = this.db) {
+        return tx.sessions.findFirst({
             where: {
                 userId,
                 isActive: true,
@@ -115,8 +113,8 @@ export class SessionRepository {
         });
     }
 
-    revoke(refreshToken: string) {
-        return this.db.session.update({
+    revoke(refreshToken: string, tx: DbClient = this.db) {
+        return tx.sessions.update({
             where: { refreshToken, isActive: true },
             data: {
                 isActive: false,
@@ -126,8 +124,8 @@ export class SessionRepository {
         });
     }
 
-    revokeAllActive(userId: UserId,) {
-        return this.db.session.updateMany({
+    revokeAllActive(userId: UserId, tx: DbClient = this.db) {
+        return tx.sessions.updateMany({
             where: { userId },
             data: {
                 isActive: false,
@@ -136,8 +134,8 @@ export class SessionRepository {
         });
     }
 
-    revokeByAccessJti(accessJti: string,) {
-        return this.db.session.update({
+    revokeByAccessJti(accessJti: string, tx: DbClient = this.db) {
+        return tx.sessions.update({
             where: { accessJti, isActive: true },
             data: {
                 isActive: false,
@@ -146,8 +144,8 @@ export class SessionRepository {
         });
     }
 
-    updateRefershToken(id: string, refreshToken: string, newJti: string) {
-        return this.db.session.update({
+    updateRefershToken(id: string, refreshToken: string, newJti: string, tx: DbClient = this.db) {
+        return tx.sessions.update({
             where: { id },
             data: {
                 lastUsedAt: new Date(),
@@ -158,8 +156,8 @@ export class SessionRepository {
         });
     }
 
-    updateLastUsed(id: string) {
-        return this.db.session.update({
+    updateLastUsed(id: string, tx: DbClient = this.db) {
+        return tx.sessions.update({
             where: { id },
             data: {
                 lastUsedAt: new Date(),

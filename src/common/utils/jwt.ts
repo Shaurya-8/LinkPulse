@@ -4,13 +4,31 @@ import { config } from "../../config";
 import { AccessToken, RefreshToken, JwtAccessPayload, JwtRefreshPayload, Jti, SessionId, TokenPair, UserId } from "../../types";
 import { UnauthorizedError } from "../errors/AppError";
 
+// function parseExpiresInToSeconds(expiresIn: string): number {
+//     const match = expiresIn.match('/^(\d+)([smhd])$/');
+//     if (!match) return 900;
+//     const value = parseInt(match[1]!, 10);
+//     const unit = match[2];
+//     const multipliers: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400 };
+//     return value * (multipliers[unit!] ?? 60);
+// }
+
 function parseExpiresInToSeconds(expiresIn: string): number {
-    const match = expiresIn.match('/^(\d+)([smhd])$/');
+    const match = expiresIn.match(/^(\d+)([smhd])$/);
+
     if (!match) return 900;
-    const value = parseInt(match[1], 10);
-    const unit = match[2];
-    const multipliers: Record<string, number> = { s: 1, m: 60, h: 36, d: 86400 };
-    return value * (multipliers[unit] ?? 60);
+
+    const value = Number(match[1]);
+    const unit = match[2] as "s" | "m" | "h" | "d";
+
+    const multipliers = {
+        s: 1,
+        m: 60,
+        h: 3600,
+        d: 86400,
+    };
+
+    return value * multipliers[unit];
 }
 
 export function generateTokenPair(

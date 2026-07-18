@@ -48,3 +48,44 @@ export const AuditAction = {
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const FeatureKey = {
+  CREATE_LINK: 'CREATE_LINK',
+  CUSTOM_ALIAS: 'CUSTOM_ALIAS',
+  PASSWORD_PROTECTION: 'PASSWORD_PROTECTION',
+  LINK_EXPIRATION: 'LINK_EXPIRATION',
+  ONE_TIME_LINKS: 'ONE_TIME_LINKS',
+  QR_CODE: 'QR_CODE',
+  CUSTOM_DOMAIN: 'CUSTOM_DOMAIN'
+} as const
+
+export type FeatureKey = (typeof FeatureKey)[keyof typeof FeatureKey]
+
+
+export const SubscriptionStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+  TRIAL: 'TRIAL',
+  PAUSED: 'PAUSED'
+} as const
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
+
+
+export const PlanType = {
+  FREE: 'FREE',
+  PRO: 'PRO',
+  ENTERPRISE: 'ENTERPRISE'
+} as const
+
+export type PlanType = (typeof PlanType)[keyof typeof PlanType]
+
+
+export const BillingPeriod = {
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY'
+} as const
+
+export type BillingPeriod = (typeof BillingPeriod)[keyof typeof BillingPeriod]

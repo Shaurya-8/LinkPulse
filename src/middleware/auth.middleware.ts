@@ -7,11 +7,11 @@ import { AuthenticatedRequest } from "../types";
 import { RefreshToken, SessionId, UserId } from "../types";
 import { JwtAccessPayload } from "../types";
 import { cache, cacheKeys } from "../config/redis";
-import { SessionRepository } from "../modules/auth/session/session.repository";
+import { SessionsRepository } from "../modules/auth/session/session.repository";
 import { prisma } from "../config/prisma";
 import { logger } from "../common/utils/logger";
 
-const sessionRepository = new SessionRepository(prisma);
+const sessionRepository = new SessionsRepository(prisma);
 
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
     try {
@@ -30,14 +30,14 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
         if (!session || !session.isActive) {
             throw new UnauthorizedError('Session is inactive or does not exist. Please login again.');
         }
-        
+
         sessionRepository.updateLastUsed(session.id)
             .catch(err => {
                 logger.warn('Failed to update session last used timestamp:', err);
             });
 
-        (req as AuthenticatedRequest).user = {
-            id: payload.sub as UserId,
+        req.user = {
+            sub: payload.sub as UserId,
             email: payload.email,
             refreshToken: session.refreshToken as RefreshToken,
             sessionId: session.id as SessionId,
@@ -51,6 +51,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
 
 export async function optionalAuthenticate(req: Request, res: Response, next: NextFunction) {
     const rawToken = extractAccessToken(req as any);
+    console.log("From middleware: ", req.url);
     if (!rawToken) {
         return next();
     }

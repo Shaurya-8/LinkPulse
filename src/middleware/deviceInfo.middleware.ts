@@ -19,13 +19,13 @@ function extractIp(req: Request): string {
         const raw = Array.isArray(xForwardedFor)
             ? xForwardedFor[0]
             : xForwardedFor;
-        const first = raw.split(',')[0].trim();
+        const first = raw?.split(',')[0]!.trim();
         if (first) return first;
     }
 
     const xRealIp = req.headers['x-real-ip'];
     if (xRealIp) {
-        return Array.isArray(xRealIp) ? xRealIp[0] : xRealIp;
+        return Array.isArray(xRealIp) ? xRealIp[0]! : xRealIp;
     }
 
     return req.socket?.remoteAddress ?? req.ip ?? 'unknown';
@@ -118,11 +118,11 @@ export function extractDeviceInfo(req: Request): DeviceInfo {
     }
 
     const deviceType = mapDeviceType(parsed.device.type);
-    const fingerprint = buildFingerprint(req, parsed, deviceType);
+    const deviceFingerprint = buildFingerprint(req, parsed, deviceType);
     const deviceName = buildDeviceName(parsed, deviceType);
 
     return {
-        fingerprint,
+        deviceFingerprint,
         deviceName,
         deviceType,
         os: parsed.os.name ?? null,
@@ -148,7 +148,7 @@ export function deviceInfoMiddleware(
     } catch (err) {
         logger.error('deviceInfoMiddleware: unexpected error', { err });
         req.deviceInfo = {
-            fingerprint: 'unknown' as DeviceFingerprint,
+            deviceFingerprint: 'unknown' as DeviceFingerprint,
             deviceName: 'Unknown Device',
             deviceType: DeviceType.UNKNOWN,
             os: null,

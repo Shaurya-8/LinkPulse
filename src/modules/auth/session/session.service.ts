@@ -1,19 +1,16 @@
 import { config } from "../../../config"
-import { prisma } from "../../../config/prisma"
+import { DbClient, prisma } from "../../../config/prisma"
 import { cache, cacheKeys } from "../../../config/redis"
 
 import { hashToken } from "../../../common/utils/crypto";
-import { logger } from "../../../common/utils/logger";
+import { DeviceInfo, TokenPair } from "../../../types";
 
-import { TokenPair } from "../auth.types";
-import { DeviceInfo } from "../../../types/express";
-
-import { SessionRepository } from "./session.repository";
+import { SessionsRepository } from "./session.repository";
 import { RefreshToken, SessionId, UserId } from "../../../types";
 import { UnauthorizedError } from "../../../common/errors/AppError";
 import type { AuthUser } from "../auth.repository";
 
-const sessionRepository = new SessionRepository(prisma);
+const sessionRepository = new SessionsRepository(prisma);
 
 
 export async function create(
@@ -22,12 +19,13 @@ export async function create(
     tokens: TokenPair,
     device: DeviceInfo,
     jti: string,
-    sessionId: string
+    sessionId: string,
+    tx?: DbClient
 ): Promise<string> {
     const count = await sessionRepository.countActive(userId);
 
     if (count >= config.session.maxPerUser) {
-        const oldest = await sessionRepository.getOldestActive(userId);
+        const oldest = await sessionRepository.getOldestActive(userId, tx);
 
         if (oldest) {
             await sessionRepository.revokeByAccessJti(
@@ -49,7 +47,7 @@ export async function create(
         userAgent: device.userAgent,
         expiresAt,
         lastUsedAt: new Date(),
-    });
+    }, tx);
 
     await cache.sadd(cacheKeys.userSessions(userId), session.id);
     return session.id;
@@ -63,35 +61,35 @@ type ActiveSession = {
 export async function revoke(
     refreshToken: RefreshToken): Promise<ActiveSession> {
     // Revoke session in DB
-    return await sessionRepository.revoke(refreshToken,);
+    return await sessionRepository.revoke(refreshToken);
 }
 
 
 export async function revokeAllActive(
-    userId: UserId,
+    userId: UserId, tx?: DbClient
 ): Promise<ActiveSession[]> {
-    const activeSessions = await sessionRepository.getAllActive(userId);
+    const activeSessions = await sessionRepository.getAllActive(userId, tx);
 
-    await sessionRepository.revokeAllActive(userId,);
+    await sessionRepository.revokeAllActive(userId, tx);
 
     return activeSessions;
 }
 
-export async function getOrRevokeUser(sub: UserId, refreshToken: string): Promise<AuthUser> {
+export async function getOrRevokeUser(sub: UserId, refreshToken: string, tx?: DbClient): Promise<AuthUser> {
 
-    const session = await sessionRepository.getWithUser(refreshToken);
+    const session = await sessionRepository.getWithUser(refreshToken, tx);
 
     if (!session) {
         throw new UnauthorizedError("invalid or expired Token");
     }
     if (session.expiresAt < new Date()) {
-        await sessionRepository.revoke(refreshToken);
+        await sessionRepository.revoke(refreshToken, tx);
         throw new UnauthorizedError('Session Expired, Please Login again');
     }
     return session.user;
 }
 
-export async function updateRefreshtoken(id: SessionId, refreshToken: string, jti: string): Promise<AuthUser> {
-    const session = await sessionRepository.updateRefershToken(id, refreshToken, jti);
+export async function updateRefreshtoken(id: SessionId, refreshToken: string, jti: string, tx?: DbClient): Promise<AuthUser> {
+    const session = await sessionRepository.updateRefershToken(id, refreshToken, jti, tx);
     return session.user
 }

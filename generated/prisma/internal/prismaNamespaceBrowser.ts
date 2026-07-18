@@ -17,8 +17,8 @@
 
 import * as runtime from "@prisma/client/runtime/index-browser"
 
-export type * from '../models.ts'
-export type * from './prismaNamespace.ts'
+export type * from '../models'
+export type * from './prismaNamespace'
 
 export const Decimal = runtime.Decimal
 
@@ -51,13 +51,20 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User',
-  Session: 'Session',
+  Countries: 'Countries',
+  Cities: 'Cities',
+  Users: 'Users',
+  Sessions: 'Sessions',
   PasswordResetToken: 'PasswordResetToken',
-  UserDevice: 'UserDevice',
-  AuditLog: 'AuditLog',
-  Link: 'Link',
-  LinkClick: 'LinkClick'
+  UserDevices: 'UserDevices',
+  AuditLogs: 'AuditLogs',
+  Links: 'Links',
+  LinkClicks: 'LinkClicks',
+  Plans: 'Plans',
+  PlanPrices: 'PlanPrices',
+  Subscriptions: 'Subscriptions',
+  FeatureLimits: 'FeatureLimits',
+  FeatureLimitUsages: 'FeatureLimitUsages'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,7 +83,33 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const UserScalarFieldEnum = {
+export const CountriesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code'
+} as const
+
+export type CountriesScalarFieldEnum = (typeof CountriesScalarFieldEnum)[keyof typeof CountriesScalarFieldEnum]
+
+
+export const RelationLoadStrategy = {
+  query: 'query',
+  join: 'join'
+} as const
+
+export type RelationLoadStrategy = (typeof RelationLoadStrategy)[keyof typeof RelationLoadStrategy]
+
+
+export const CitiesScalarFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  city: 'city'
+} as const
+
+export type CitiesScalarFieldEnum = (typeof CitiesScalarFieldEnum)[keyof typeof CitiesScalarFieldEnum]
+
+
+export const UsersScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
@@ -94,27 +127,18 @@ export const UserScalarFieldEnum = {
   deletedAt: 'deletedAt'
 } as const
 
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
 
 
-export const RelationLoadStrategy = {
-  query: 'query',
-  join: 'join'
-} as const
-
-export type RelationLoadStrategy = (typeof RelationLoadStrategy)[keyof typeof RelationLoadStrategy]
-
-
-export const SessionScalarFieldEnum = {
+export const SessionsScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   deviceId: 'deviceId',
+  ipAddress: 'ipAddress',
   refreshToken: 'refreshToken',
   accessJti: 'accessJti',
-  ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  country: 'country',
-  city: 'city',
+  cityId: 'cityId',
   isActive: 'isActive',
   expiresAt: 'expiresAt',
   lastUsedAt: 'lastUsedAt',
@@ -122,7 +146,7 @@ export const SessionScalarFieldEnum = {
   revokedAt: 'revokedAt'
 } as const
 
-export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+export type SessionsScalarFieldEnum = (typeof SessionsScalarFieldEnum)[keyof typeof SessionsScalarFieldEnum]
 
 
 export const PasswordResetTokenScalarFieldEnum = {
@@ -138,7 +162,7 @@ export const PasswordResetTokenScalarFieldEnum = {
 export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
 
 
-export const UserDeviceScalarFieldEnum = {
+export const UserDevicesScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   deviceFingerprint: 'deviceFingerprint',
@@ -150,6 +174,7 @@ export const UserDeviceScalarFieldEnum = {
   browser: 'browser',
   browserVersion: 'browserVersion',
   cpu: 'cpu',
+  userAgent: 'userAgent',
   isTrusted: 'isTrusted',
   isPushEnabled: 'isPushEnabled',
   pushToken: 'pushToken',
@@ -160,10 +185,10 @@ export const UserDeviceScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type UserDeviceScalarFieldEnum = (typeof UserDeviceScalarFieldEnum)[keyof typeof UserDeviceScalarFieldEnum]
+export type UserDevicesScalarFieldEnum = (typeof UserDevicesScalarFieldEnum)[keyof typeof UserDevicesScalarFieldEnum]
 
 
-export const AuditLogScalarFieldEnum = {
+export const AuditLogsScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   action: 'action',
@@ -179,10 +204,10 @@ export const AuditLogScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+export type AuditLogsScalarFieldEnum = (typeof AuditLogsScalarFieldEnum)[keyof typeof AuditLogsScalarFieldEnum]
 
 
-export const LinkScalarFieldEnum = {
+export const LinksScalarFieldEnum = {
   id: 'id',
   shortCode: 'shortCode',
   customAlias: 'customAlias',
@@ -196,24 +221,22 @@ export const LinkScalarFieldEnum = {
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  clickCount: 'clickCount',
   passwordHash: 'passwordHash',
-  totalClicks: 'totalClicks',
   clickLimit: 'clickLimit',
-  userId: 'userId',
-  deviceId: 'deviceId'
+  userId: 'userId'
 } as const
 
-export type LinkScalarFieldEnum = (typeof LinkScalarFieldEnum)[keyof typeof LinkScalarFieldEnum]
+export type LinksScalarFieldEnum = (typeof LinksScalarFieldEnum)[keyof typeof LinksScalarFieldEnum]
 
 
-export const LinkClickScalarFieldEnum = {
+export const LinkClicksScalarFieldEnum = {
   id: 'id',
   linkId: 'linkId',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
   referer: 'referer',
-  country: 'country',
-  city: 'city',
+  cityId: 'cityId',
   deviceType: 'deviceType',
   browser: 'browser',
   os: 'os',
@@ -221,7 +244,66 @@ export const LinkClickScalarFieldEnum = {
   isBot: 'isBot'
 } as const
 
-export type LinkClickScalarFieldEnum = (typeof LinkClickScalarFieldEnum)[keyof typeof LinkClickScalarFieldEnum]
+export type LinkClicksScalarFieldEnum = (typeof LinkClicksScalarFieldEnum)[keyof typeof LinkClicksScalarFieldEnum]
+
+
+export const PlansScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlansScalarFieldEnum = (typeof PlansScalarFieldEnum)[keyof typeof PlansScalarFieldEnum]
+
+
+export const PlanPricesScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  billingPeriod: 'billingPeriod',
+  price: 'price',
+  currency: 'currency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanPricesScalarFieldEnum = (typeof PlanPricesScalarFieldEnum)[keyof typeof PlanPricesScalarFieldEnum]
+
+
+export const SubscriptionsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  planPriceId: 'planPriceId',
+  status: 'status',
+  startedAt: 'startedAt',
+  expiresAt: 'expiresAt',
+  cancelledAt: 'cancelledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionsScalarFieldEnum = (typeof SubscriptionsScalarFieldEnum)[keyof typeof SubscriptionsScalarFieldEnum]
+
+
+export const FeatureLimitsScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  featureKey: 'featureKey',
+  limitValue: 'limitValue'
+} as const
+
+export type FeatureLimitsScalarFieldEnum = (typeof FeatureLimitsScalarFieldEnum)[keyof typeof FeatureLimitsScalarFieldEnum]
+
+
+export const FeatureLimitUsagesScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  featureKey: 'featureKey',
+  currentUsed: 'currentUsed'
+} as const
+
+export type FeatureLimitUsagesScalarFieldEnum = (typeof FeatureLimitUsagesScalarFieldEnum)[keyof typeof FeatureLimitUsagesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -248,6 +330,24 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const CountriesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code'
+} as const
+
+export type CountriesOrderByRelevanceFieldEnum = (typeof CountriesOrderByRelevanceFieldEnum)[keyof typeof CountriesOrderByRelevanceFieldEnum]
+
+
+export const CitiesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  city: 'city'
+} as const
+
+export type CitiesOrderByRelevanceFieldEnum = (typeof CitiesOrderByRelevanceFieldEnum)[keyof typeof CitiesOrderByRelevanceFieldEnum]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
@@ -256,7 +356,7 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
-export const UserOrderByRelevanceFieldEnum = {
+export const UsersOrderByRelevanceFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
@@ -265,22 +365,21 @@ export const UserOrderByRelevanceFieldEnum = {
   avatarUrl: 'avatarUrl'
 } as const
 
-export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+export type UsersOrderByRelevanceFieldEnum = (typeof UsersOrderByRelevanceFieldEnum)[keyof typeof UsersOrderByRelevanceFieldEnum]
 
 
-export const SessionOrderByRelevanceFieldEnum = {
+export const SessionsOrderByRelevanceFieldEnum = {
   id: 'id',
   userId: 'userId',
   deviceId: 'deviceId',
+  ipAddress: 'ipAddress',
   refreshToken: 'refreshToken',
   accessJti: 'accessJti',
-  ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  country: 'country',
-  city: 'city'
+  cityId: 'cityId'
 } as const
 
-export type SessionOrderByRelevanceFieldEnum = (typeof SessionOrderByRelevanceFieldEnum)[keyof typeof SessionOrderByRelevanceFieldEnum]
+export type SessionsOrderByRelevanceFieldEnum = (typeof SessionsOrderByRelevanceFieldEnum)[keyof typeof SessionsOrderByRelevanceFieldEnum]
 
 
 export const PasswordResetTokenOrderByRelevanceFieldEnum = {
@@ -293,7 +392,7 @@ export const PasswordResetTokenOrderByRelevanceFieldEnum = {
 export type PasswordResetTokenOrderByRelevanceFieldEnum = (typeof PasswordResetTokenOrderByRelevanceFieldEnum)[keyof typeof PasswordResetTokenOrderByRelevanceFieldEnum]
 
 
-export const UserDeviceOrderByRelevanceFieldEnum = {
+export const UserDevicesOrderByRelevanceFieldEnum = {
   id: 'id',
   userId: 'userId',
   deviceFingerprint: 'deviceFingerprint',
@@ -304,10 +403,11 @@ export const UserDeviceOrderByRelevanceFieldEnum = {
   browser: 'browser',
   browserVersion: 'browserVersion',
   cpu: 'cpu',
+  userAgent: 'userAgent',
   pushToken: 'pushToken'
 } as const
 
-export type UserDeviceOrderByRelevanceFieldEnum = (typeof UserDeviceOrderByRelevanceFieldEnum)[keyof typeof UserDeviceOrderByRelevanceFieldEnum]
+export type UserDevicesOrderByRelevanceFieldEnum = (typeof UserDevicesOrderByRelevanceFieldEnum)[keyof typeof UserDevicesOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {
@@ -319,7 +419,7 @@ export const JsonNullValueFilter = {
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
-export const AuditLogOrderByRelevanceFieldEnum = {
+export const AuditLogsOrderByRelevanceFieldEnum = {
   id: 'id',
   userId: 'userId',
   sessionId: 'sessionId',
@@ -330,10 +430,10 @@ export const AuditLogOrderByRelevanceFieldEnum = {
   errorMsg: 'errorMsg'
 } as const
 
-export type AuditLogOrderByRelevanceFieldEnum = (typeof AuditLogOrderByRelevanceFieldEnum)[keyof typeof AuditLogOrderByRelevanceFieldEnum]
+export type AuditLogsOrderByRelevanceFieldEnum = (typeof AuditLogsOrderByRelevanceFieldEnum)[keyof typeof AuditLogsOrderByRelevanceFieldEnum]
 
 
-export const LinkOrderByRelevanceFieldEnum = {
+export const LinksOrderByRelevanceFieldEnum = {
   id: 'id',
   shortCode: 'shortCode',
   customAlias: 'customAlias',
@@ -343,24 +443,64 @@ export const LinkOrderByRelevanceFieldEnum = {
   description: 'description',
   faviconUrl: 'faviconUrl',
   passwordHash: 'passwordHash',
-  userId: 'userId',
-  deviceId: 'deviceId'
+  userId: 'userId'
 } as const
 
-export type LinkOrderByRelevanceFieldEnum = (typeof LinkOrderByRelevanceFieldEnum)[keyof typeof LinkOrderByRelevanceFieldEnum]
+export type LinksOrderByRelevanceFieldEnum = (typeof LinksOrderByRelevanceFieldEnum)[keyof typeof LinksOrderByRelevanceFieldEnum]
 
 
-export const LinkClickOrderByRelevanceFieldEnum = {
+export const LinkClicksOrderByRelevanceFieldEnum = {
   id: 'id',
   linkId: 'linkId',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
   referer: 'referer',
-  country: 'country',
-  city: 'city',
+  cityId: 'cityId',
   browser: 'browser',
   os: 'os'
 } as const
 
-export type LinkClickOrderByRelevanceFieldEnum = (typeof LinkClickOrderByRelevanceFieldEnum)[keyof typeof LinkClickOrderByRelevanceFieldEnum]
+export type LinkClicksOrderByRelevanceFieldEnum = (typeof LinkClicksOrderByRelevanceFieldEnum)[keyof typeof LinkClicksOrderByRelevanceFieldEnum]
+
+
+export const PlansOrderByRelevanceFieldEnum = {
+  id: 'id'
+} as const
+
+export type PlansOrderByRelevanceFieldEnum = (typeof PlansOrderByRelevanceFieldEnum)[keyof typeof PlansOrderByRelevanceFieldEnum]
+
+
+export const PlanPricesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  currency: 'currency'
+} as const
+
+export type PlanPricesOrderByRelevanceFieldEnum = (typeof PlanPricesOrderByRelevanceFieldEnum)[keyof typeof PlanPricesOrderByRelevanceFieldEnum]
+
+
+export const SubscriptionsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  planPriceId: 'planPriceId'
+} as const
+
+export type SubscriptionsOrderByRelevanceFieldEnum = (typeof SubscriptionsOrderByRelevanceFieldEnum)[keyof typeof SubscriptionsOrderByRelevanceFieldEnum]
+
+
+export const FeatureLimitsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  planId: 'planId'
+} as const
+
+export type FeatureLimitsOrderByRelevanceFieldEnum = (typeof FeatureLimitsOrderByRelevanceFieldEnum)[keyof typeof FeatureLimitsOrderByRelevanceFieldEnum]
+
+
+export const FeatureLimitUsagesOrderByRelevanceFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId'
+} as const
+
+export type FeatureLimitUsagesOrderByRelevanceFieldEnum = (typeof FeatureLimitUsagesOrderByRelevanceFieldEnum)[keyof typeof FeatureLimitUsagesOrderByRelevanceFieldEnum]
 

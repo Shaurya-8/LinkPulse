@@ -69,3 +69,24 @@ export class BadRequestError extends AppError {
         super(message, 400, "BAD_REQUEST");
     }
 }
+
+export class UrlValidationError extends BadRequestError {
+    constructor(message: string) {
+        super(message);
+        this.name = "UrlValidationError";
+    }
+}
+
+export class SubscriptionError extends BadRequestError {
+    constructor(message: string) {
+        super(message);
+        this.name = "SubscriptionError"
+    }
+}
+
+export class LimitExceededError extends BadRequestError {
+    constructor(message: string) {
+        super(message);
+        this.name = "LimitExceededError";
+    }
+}

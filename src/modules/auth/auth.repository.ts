@@ -1,154 +1,112 @@
-import { Prisma } from "../../../generated/prisma/client";
-import { DbClient } from "../../config/prisma"
-import { RegisterDto } from "../../types";
-import { UserStatus } from "../../../generated/prisma/client";
-export const authUserSelect = {
-    id: true,
-    firstName: true,
-    lastName: true,
-    email: true,
-    status: true,
-    emailVerified: true,
-} satisfies Prisma.UserSelect;
+import { Prisma, UserStatus } from "../../../generated/prisma/client";
+import { DbClient } from "../../config/prisma";
 
-export type AuthUser = Prisma.UserGetPayload<{
-    select: typeof authUserSelect;
+export const authUserSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  status: true,
+  emailVerified: true,
+} satisfies Prisma.UsersSelect;
+
+export type AuthUser = Prisma.UsersGetPayload<{
+  select: typeof authUserSelect;
 }>;
 
 export class UserRepository {
-    constructor(private db: DbClient) { }
+  constructor(private readonly db: DbClient, tx?: DbClient) { }
 
-    // Common select for authenticated user
+  /* -------------------------------------------------------------------------- */
+  /* Generic CRUD                                                                */
+  /* -------------------------------------------------------------------------- */
 
+  create<T extends Prisma.UsersCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UsersCreateArgs>,
+    tx: DbClient = this.db): Promise<Prisma.UsersGetPayload<T>> {
+    return tx.users.create(args);
+  }
 
-    /**
-     * Register User
-    */
-    createUser(data: RegisterDto) {
-        return this.db.user.create({
-            data,
-        });
-    }
-    /**
-     * Login User
-     * Returns password so it can be compared.
-    */
-    loginUser(email: string) {
-        return this.db.user.findUnique({
-            where: { email },
-            select: { ...authUserSelect, passwordHash: true }
-        });
-    }
+  findUnique<T extends Prisma.UsersFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UsersFindUniqueArgs>
+    ,
+    tx: DbClient = this.db): Promise<Prisma.UsersGetPayload<T> | null> {
+    return tx.users.findUnique(args);
+  }
 
-    /**
-     * Get user by email
-    */
-    getByEmail(email: string) {
-        return this.db.user.findUnique({
-            where: { email },
-        });
-    }
+  findFirst<T extends Prisma.UsersFindFirstArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UsersFindFirstArgs>
+    ,
+    tx: DbClient = this.db): Promise<Prisma.UsersGetPayload<T> | null> {
+    return tx.users.findFirst(args);
+  }
 
-    getById(id: string) {
-        return this.db.user.findUnique({
-            where: { id },
-        });
-    }
+  update<T extends Prisma.UsersUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UsersUpdateArgs>
+    ,
+    tx: DbClient = this.db): Promise<Prisma.UsersGetPayload<T>> {
+    return tx.users.update(args);
+  }
 
-    /**
-     * Get user with custom select
-     */
-    getByEmailSelect<T extends Prisma.UserSelect>(
-        email: string,
-        select: T
-    ): Promise<Prisma.UserGetPayload<{ select: T }> | null> {
-        return this.db.user.findUnique({
-            where: { email },
-            select,
-        });
-    }
+  delete<T extends Prisma.UsersDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UsersDeleteArgs>
+    ,
+    tx: DbClient = this.db): Promise<Prisma.UsersGetPayload<T>> {
+    return tx.users.delete(args);
+  }
 
-    /**
-    * Update status
-    */
-    updateStatus(email: string, status: UserStatus) {
-        return this.db.user.update({
-            where: { email },
-            data: { status },
-            select: authUserSelect,
-        });
-    }
+  upsert<T extends Prisma.UsersUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UsersUpsertArgs>
+    ,
+    tx: DbClient = this.db): Promise<Prisma.UsersGetPayload<T>> {
+    return tx.users.upsert(args);
+  }
 
-    /**
-     * Verify Email
-     */
-    verifyEmail(email: string) {
-        return this.db.user.update({
-            where: { email },
-            data: {
-                emailVerified: true,
-                status: UserStatus.ACTIVE
-            },
-            select: authUserSelect,
-        });
-    }
+  /* -------------------------------------------------------------------------- */
+  /* Domain-specific methods                                                     */
+  /* -------------------------------------------------------------------------- */
 
+  loginUser(email: string, tx?: DbClient) {
+    return this.findUnique({
+      where: { email },
+      select: {
+        ...authUserSelect,
+        passwordHash: true,
+      },
+    }, tx);
+  }
 
-    /**
-     * Update password
-     */
-    updatePassword(email: string, passwordHash: string) {
-        return this.db.user.update({
-            where: { email },
-            data: { passwordHash },
-            select: authUserSelect
-        });
-    }
+  verifyEmail(email: string, tx?: DbClient) {
+    return this.update({
+      where: { email },
+      data: {
+        emailVerified: true,
+        status: UserStatus.ACTIVE,
+      },
+      select: authUserSelect,
+    }, tx);
+  }
 
-    /**
-     * Update profile
-     */
-    updateProfile(
-        email: string,
-        data: Prisma.UserUpdateInput
-    ) {
-        return this.db.user.update({
-            where: { email },
-            data,
-        });
-    }
+  updateStatus(email: string, status: UserStatus, tx?: DbClient) {
+    return this.update({
+      where: { email },
+      data: { status },
+      select: authUserSelect,
+    }, tx);
+  }
 
-    /**
-     * Generic update
-     */
-    update<T extends Prisma.UserUpdateArgs>(
-        args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
-    ): Promise<Prisma.UserGetPayload<T>> {
-        return this.db.user.update(args);
-    }
+  updatePassword(email: string, passwordHash: string, tx?: DbClient) {
+    return this.update({
+      where: { email },
+      data: { passwordHash },
+      select: authUserSelect,
+    }, tx);
+  }
 
-
-    /**
-     * Upsert
-     */
-    upsert<T extends Prisma.UserUpsertArgs>(
-        args: Prisma.SelectSubset<T, Prisma.UserUpsertArgs>
-    ): Promise<Prisma.UserGetPayload<T>> {
-        return this.db.user.upsert(args);
-    }
-
-    /**
-     * Delete user
-     */
-    deleteUser(email: string) {
-        return this.db.user.delete({
-            where: { email },
-        });
-    }
-
-    withTransaction<T>(
-        fn: (tx: Prisma.TransactionClient) => Promise<T>
-    ): Promise<T> {
-        return this.db.$transaction(fn);
-    }
+  withTransaction<T>(
+    fn: (tx: Prisma.TransactionClient) => Promise<T>
+    ,
+    tx: DbClient = this.db): Promise<T> {
+    return this.db.$transaction(fn);
+  }
 }

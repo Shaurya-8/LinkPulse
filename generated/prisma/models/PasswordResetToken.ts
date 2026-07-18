@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums.ts"
-import type * as Prisma from "../internal/prismaNamespace.ts"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model PasswordResetToken
@@ -198,7 +198,7 @@ export type PasswordResetTokenWhereInput = {
   usedAt?: Prisma.DateTimeNullableFilter<"PasswordResetToken"> | Date | string | null
   ipAddress?: Prisma.StringNullableFilter<"PasswordResetToken"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PasswordResetToken"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
 }
 
 export type PasswordResetTokenOrderByWithRelationInput = {
@@ -209,7 +209,7 @@ export type PasswordResetTokenOrderByWithRelationInput = {
   usedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   ipAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
+  user?: Prisma.UsersOrderByWithRelationInput
   _relevance?: Prisma.PasswordResetTokenOrderByRelevanceInput
 }
 
@@ -224,7 +224,7 @@ export type PasswordResetTokenWhereUniqueInput = Prisma.AtLeast<{
   usedAt?: Prisma.DateTimeNullableFilter<"PasswordResetToken"> | Date | string | null
   ipAddress?: Prisma.StringNullableFilter<"PasswordResetToken"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PasswordResetToken"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
 }, "id" | "tokenHash">
 
 export type PasswordResetTokenOrderByWithAggregationInput = {
@@ -260,7 +260,7 @@ export type PasswordResetTokenCreateInput = {
   usedAt?: Date | string | null
   ipAddress?: string | null
   createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutPasswordResetsInput
+  user: Prisma.UsersCreateNestedOneWithoutPasswordResetsInput
 }
 
 export type PasswordResetTokenUncheckedCreateInput = {
@@ -280,7 +280,7 @@ export type PasswordResetTokenUpdateInput = {
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutPasswordResetsNestedInput
+  user?: Prisma.UsersUpdateOneRequiredWithoutPasswordResetsNestedInput
 }
 
 export type PasswordResetTokenUncheckedUpdateInput = {
@@ -513,7 +513,7 @@ export type PasswordResetTokenSelect<ExtArgs extends runtime.Types.Extensions.In
   usedAt?: boolean
   ipAddress?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["passwordResetToken"]>
 
 export type PasswordResetTokenSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -524,7 +524,7 @@ export type PasswordResetTokenSelectCreateManyAndReturn<ExtArgs extends runtime.
   usedAt?: boolean
   ipAddress?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["passwordResetToken"]>
 
 export type PasswordResetTokenSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -535,7 +535,7 @@ export type PasswordResetTokenSelectUpdateManyAndReturn<ExtArgs extends runtime.
   usedAt?: boolean
   ipAddress?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["passwordResetToken"]>
 
 export type PasswordResetTokenSelectScalar = {
@@ -550,19 +550,19 @@ export type PasswordResetTokenSelectScalar = {
 
 export type PasswordResetTokenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "tokenHash" | "expiresAt" | "usedAt" | "ipAddress" | "createdAt", ExtArgs["result"]["passwordResetToken"]>
 export type PasswordResetTokenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 export type PasswordResetTokenIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 export type PasswordResetTokenIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 
 export type $PasswordResetTokenPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PasswordResetToken"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
+    user: Prisma.$UsersPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -966,7 +966,7 @@ readonly fields: PasswordResetTokenFieldRefs;
  */
 export interface Prisma__PasswordResetTokenClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

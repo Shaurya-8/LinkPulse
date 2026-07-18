@@ -19,6 +19,13 @@ export type AccessToken = Brand<string, "AccessToken">;
 export type RefreshToken = Brand<string, "RefreshToken">;
 export type TokenHash = Brand<string, "TokenHash">;
 export type DeviceFingerprint = Brand<string, "DeviceFingerprint">;
+export type SubscriptionId = Brand<string, "SubscriptionId">;
+export type PlanId = Brand<string, "PlanId">;
+export type PlanPriceId = Brand<string, "PlanPriceId">;
+export type FeatureId = Brand<string, "FeatureId">;
+
+
+export const asUserId = (id: string): UserId => id as UserId;
 
 // ═════════════════════════════════════════════════════════════════════════════
 // UTILITY TYPES
@@ -255,7 +262,7 @@ export interface TokenPair {
  * Augmented express Request for routes protected by the authenticate middleware.
  * After authenticate runs, `user` is guaranteed to be populated.
  */
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest {
   /** Populated by authenticate middleware — undefined on public routes */
   user: {
     id: UserId;
@@ -265,11 +272,20 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
+export interface CreateRequestContext extends Request {
+  requestedFeatures: String[] | null;
+}
+
 /**
  * Augmented express Request for public routes (no user, but device is present).
  */
 export interface PublicRequest extends Request {
   deviceInfo?: DeviceInfo;
+}
+
+export interface Actor {
+  userId: UserId,
+
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

@@ -7,7 +7,7 @@ import { DeviceInfo } from "../../types"
 import { BadRequestError, UnauthorizedError } from "../../common/errors/AppError";
 import { clearAuthCookies, extractAccessToken, extractRefreshToken, setAuthCookies } from "../../common/utils/cookies";
 import { RefreshToken, UserId } from "../../types";
-import { verifyToken } from "../../common/utils/jwt";
+
 function requireDevice(req: Request): DeviceInfo {
     const device = req.deviceInfo;
     if (!device) {

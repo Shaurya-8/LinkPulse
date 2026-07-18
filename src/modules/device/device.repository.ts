@@ -1,14 +1,14 @@
-import { Prisma, UserDevice } from "../../../generated/prisma/client";
+import { Prisma, UserDevices } from "../../../generated/prisma/client";
 import { DbClient } from "../../config/prisma";
-import { DeviceFingerprint } from "../../types";
+import { DeviceFingerprint} from "../../types/index";
 export class DeviceRepository {
     constructor(private readonly db: DbClient) { }
 
     async findByUserAndFingerprint(
         userId: string,
-        fingerprint: string
-    ): Promise<UserDevice | null> {
-        return this.db.userDevice.findUnique({
+        fingerprint: DeviceFingerprint
+        , tx: DbClient = this.db): Promise<UserDevices | null> {
+        return tx.userDevices.findUnique({
             where: {
                 userId_deviceFingerprint: {
                     userId,
@@ -18,21 +18,17 @@ export class DeviceRepository {
         });
     }
 
-    async findByFingerprint(deviceFingerprint: DeviceFingerprint) {
-        return this.db.userDevice.findUnique({ where: { deviceFingerprint } })
-    }
-
-    async create(data: Prisma.UserDeviceCreateInput): Promise<UserDevice> {
-        return this.db.userDevice.create({
+    async create(data: Prisma.UserDevicesCreateInput, tx: DbClient = this.db): Promise<UserDevices> {
+        return tx.userDevices.create({
             data,
         });
     }
 
     async update(
         id: string,
-        data: Prisma.UserDeviceUpdateInput
-    ): Promise<UserDevice> {
-        return this.db.userDevice.update({
+        data: Prisma.UserDevicesUpdateInput,
+        tx: DbClient = this.db): Promise<UserDevices> {
+        return tx.userDevices.update({
             where: { id },
             data,
         });
@@ -41,9 +37,9 @@ export class DeviceRepository {
     async upsert(
         userId: string,
         fingerprint: string,
-        data: Prisma.UserDeviceCreateInput
-    ): Promise<UserDevice> {
-        return this.db.userDevice.upsert({
+        data: Prisma.UserDevicesCreateInput
+        , tx: DbClient = this.db): Promise<UserDevices> {
+        return tx.userDevices.upsert({
             where: {
                 userId_deviceFingerprint: {
                     userId,
@@ -60,8 +56,8 @@ export class DeviceRepository {
         });
     }
 
-    async delete(id: string): Promise<UserDevice> {
-        return this.db.userDevice.delete({
+    async delete(id: string, tx: DbClient = this.db): Promise<UserDevices> {
+        return tx.userDevices.delete({
             where: { id },
         });
     }
