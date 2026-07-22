@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
+
+-- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('PENDING', 'ACTIVE', 'BLOCKED', 'DELETED');
 
 -- CreateEnum
@@ -6,6 +9,12 @@ CREATE TYPE "DeviceType" AS ENUM ('DESKTOP', 'MOBILE', 'TABLET', 'UNKNOWN');
 
 -- CreateEnum
 CREATE TYPE "AuditAction" AS ENUM ('REGISTER', 'LOGIN_SUCCESS', 'LOGIN_FAIL', 'LOGOUT', 'LOGOUT_ALL', 'TOKEN_REFRESHED', 'TOKEN_REVOKED', 'EMAIL_VERIFIED', 'PASSWORD_CHANGED', 'PASSWORD_RESET_REQUEST', 'PASSWORD_RESET_SUCCESS', 'DEVICE_TRUSTED', 'DEVICE_REMOVED', 'SESSION_EXPIRED', 'RATE_LIMIT_HIT');
+
+-- CreateEnum
+CREATE TYPE "RedirectType" AS ENUM ('TEMPORARY', 'PERMANENT');
+
+-- CreateEnum
+CREATE TYPE "ConditionType" AS ENUM ('DEVICE', 'GEO', 'LANGUAGE', 'TIME_OF_DAY', 'DAY_OF_WEEK', 'DATE_RANGE');
 
 -- CreateEnum
 CREATE TYPE "FeatureKey" AS ENUM ('CREATE_LINK', 'CUSTOM_ALIAS', 'PASSWORD_PROTECTION', 'LINK_EXPIRATION', 'ONE_TIME_LINKS', 'QR_CODE', 'CUSTOM_DOMAIN');
@@ -42,6 +51,7 @@ CREATE TABLE "users" (
     "id" UUID NOT NULL,
     "email" VARCHAR(255) NOT NULL,
     "password_hash" TEXT NOT NULL,
+    "role" "UserRole" NOT NULL DEFAULT 'USER',
     "first_name" VARCHAR(100) NOT NULL,
     "last_name" VARCHAR(100),
     "status" "UserStatus" NOT NULL DEFAULT 'PENDING',
@@ -150,10 +160,11 @@ CREATE TABLE "links" (
     "expires_at" TIMESTAMPTZ,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
+    "redirectType" "RedirectType" NOT NULL DEFAULT 'TEMPORARY',
     "clickCount" INTEGER NOT NULL DEFAULT 0,
     "password_hash" TEXT,
-    "click_limit" INTEGER NOT NULL DEFAULT 0,
-    "user_id" UUID NOT NULL,
+    "click_limit" INTEGER NOT NULL DEFAULT 1000,
+    "user_id" UUID,
 
     CONSTRAINT "links_pkey" PRIMARY KEY ("id")
 );
@@ -173,6 +184,44 @@ CREATE TABLE "link_clicks" (
     "isBot" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "link_clicks_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "redirect_rules" (
+    "id" UUID NOT NULL,
+    "linkId" UUID NOT NULL,
+    "priority" INTEGER NOT NULL DEFAULT 0,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "conditionType" "ConditionType" NOT NULL,
+    "conditionValue" TEXT NOT NULL,
+    "targetUrl" TEXT NOT NULL,
+    "label" TEXT,
+
+    CONSTRAINT "redirect_rules_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ab_tests" (
+    "id" UUID NOT NULL,
+    "linkId" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ab_tests_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ab_test_variants" (
+    "id" UUID NOT NULL,
+    "testId" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "weight" INTEGER NOT NULL DEFAULT 50,
+    "clicks" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "ab_test_variants_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -225,13 +274,13 @@ CREATE TABLE "feature_limits" (
 );
 
 -- CreateTable
-CREATE TABLE "feature_limit_used" (
+CREATE TABLE "feature_limit_usages" (
     "id" UUID NOT NULL,
     "subscription_id" UUID NOT NULL,
-    "featureKey" "FeatureKey" NOT NULL,
+    "feature_key" "FeatureKey" NOT NULL,
     "current_used" INTEGER NOT NULL DEFAULT 0,
 
-    CONSTRAINT "feature_limit_used_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "feature_limit_usages_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -256,7 +305,7 @@ CREATE INDEX "users_deleted_at_idx" ON "users"("deleted_at");
 CREATE INDEX "users_last_login_at_idx" ON "users"("last_login_at");
 
 -- CreateIndex
-CREATE INDEX "users_status_created_at_idx" ON "users"("status", "created_at");
+CREATE INDEX "users_email_verified_created_at_idx" ON "users"("email_verified", "created_at");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "sessions_refresh_token_key" ON "sessions"("refresh_token");
@@ -316,13 +365,13 @@ CREATE UNIQUE INDEX "links_short_code_key" ON "links"("short_code");
 CREATE UNIQUE INDEX "links_custom_alias_key" ON "links"("custom_alias");
 
 -- CreateIndex
-CREATE INDEX "links_expires_at_is_active_idx" ON "links"("expires_at", "is_active");
+CREATE INDEX "links_is_active_expires_at_idx" ON "links"("is_active", "expires_at");
 
 -- CreateIndex
 CREATE INDEX "links_user_id_is_active_expires_at_idx" ON "links"("user_id", "is_active", "expires_at");
 
 -- CreateIndex
-CREATE INDEX "links_expires_at_idx" ON "links"("expires_at");
+CREATE INDEX "links_user_id_expires_at_idx" ON "links"("user_id", "expires_at");
 
 -- CreateIndex
 CREATE INDEX "links_user_id_idx" ON "links"("user_id");
@@ -338,6 +387,15 @@ CREATE INDEX "link_clicks_link_id_clickedAt_idx" ON "link_clicks"("link_id", "cl
 
 -- CreateIndex
 CREATE INDEX "link_clicks_link_id_isBot_clickedAt_idx" ON "link_clicks"("link_id", "isBot", "clickedAt" DESC);
+
+-- CreateIndex
+CREATE INDEX "redirect_rules_linkId_idx" ON "redirect_rules"("linkId");
+
+-- CreateIndex
+CREATE INDEX "ab_tests_linkId_idx" ON "ab_tests"("linkId");
+
+-- CreateIndex
+CREATE INDEX "ab_test_variants_testId_idx" ON "ab_test_variants"("testId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "plans_name_key" ON "plans"("name");
@@ -370,10 +428,10 @@ CREATE INDEX "feature_limits_plan_id_idx" ON "feature_limits"("plan_id");
 CREATE UNIQUE INDEX "feature_limits_plan_id_featureKey_key" ON "feature_limits"("plan_id", "featureKey");
 
 -- CreateIndex
-CREATE INDEX "feature_limit_used_subscription_id_idx" ON "feature_limit_used"("subscription_id");
+CREATE INDEX "feature_limit_usages_subscription_id_idx" ON "feature_limit_usages"("subscription_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "feature_limit_used_subscription_id_featureKey_key" ON "feature_limit_used"("subscription_id", "featureKey");
+CREATE UNIQUE INDEX "feature_limit_usages_subscription_id_feature_key_key" ON "feature_limit_usages"("subscription_id", "feature_key");
 
 -- AddForeignKey
 ALTER TABLE "Cities" ADD CONSTRAINT "Cities_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "Countries"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -406,6 +464,15 @@ ALTER TABLE "link_clicks" ADD CONSTRAINT "link_clicks_city_id_fkey" FOREIGN KEY 
 ALTER TABLE "link_clicks" ADD CONSTRAINT "link_clicks_link_id_fkey" FOREIGN KEY ("link_id") REFERENCES "links"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "redirect_rules" ADD CONSTRAINT "redirect_rules_linkId_fkey" FOREIGN KEY ("linkId") REFERENCES "links"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ab_tests" ADD CONSTRAINT "ab_tests_linkId_fkey" FOREIGN KEY ("linkId") REFERENCES "links"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ab_test_variants" ADD CONSTRAINT "ab_test_variants_testId_fkey" FOREIGN KEY ("testId") REFERENCES "ab_tests"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "plan_prices" ADD CONSTRAINT "plan_prices_plan_id_fkey" FOREIGN KEY ("plan_id") REFERENCES "plans"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -421,4 +488,4 @@ ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_plan_price_id_fkey" FO
 ALTER TABLE "feature_limits" ADD CONSTRAINT "feature_limits_plan_id_fkey" FOREIGN KEY ("plan_id") REFERENCES "plans"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "feature_limit_used" ADD CONSTRAINT "feature_limit_used_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "subscriptions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "feature_limit_usages" ADD CONSTRAINT "feature_limit_usages_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "subscriptions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

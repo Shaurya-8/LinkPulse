@@ -393,11 +393,14 @@ export const ModelName = {
   AuditLogs: 'AuditLogs',
   Links: 'Links',
   LinkClicks: 'LinkClicks',
+  RedirectRule: 'RedirectRule',
+  ABTest: 'ABTest',
+  ABTestVariant: 'ABTestVariant',
   Plans: 'Plans',
   PlanPrices: 'PlanPrices',
   Subscriptions: 'Subscriptions',
-  FeatureLimits: 'FeatureLimits',
-  FeatureLimitUsages: 'FeatureLimitUsages'
+  Features: 'Features',
+  FeatureUsages: 'FeatureUsages'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "countries" | "cities" | "users" | "sessions" | "passwordResetToken" | "userDevices" | "auditLogs" | "links" | "linkClicks" | "plans" | "planPrices" | "subscriptions" | "featureLimits" | "featureLimitUsages"
+    modelProps: "countries" | "cities" | "users" | "sessions" | "passwordResetToken" | "userDevices" | "auditLogs" | "links" | "linkClicks" | "redirectRule" | "aBTest" | "aBTestVariant" | "plans" | "planPrices" | "subscriptions" | "features" | "featureUsages"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1083,6 +1086,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RedirectRule: {
+      payload: Prisma.$RedirectRulePayload<ExtArgs>
+      fields: Prisma.RedirectRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RedirectRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RedirectRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>
+        }
+        findFirst: {
+          args: Prisma.RedirectRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RedirectRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>
+        }
+        findMany: {
+          args: Prisma.RedirectRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>[]
+        }
+        create: {
+          args: Prisma.RedirectRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>
+        }
+        createMany: {
+          args: Prisma.RedirectRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RedirectRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>[]
+        }
+        delete: {
+          args: Prisma.RedirectRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>
+        }
+        update: {
+          args: Prisma.RedirectRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.RedirectRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RedirectRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RedirectRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.RedirectRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RedirectRulePayload>
+        }
+        aggregate: {
+          args: Prisma.RedirectRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRedirectRule>
+        }
+        groupBy: {
+          args: Prisma.RedirectRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RedirectRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RedirectRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RedirectRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    ABTest: {
+      payload: Prisma.$ABTestPayload<ExtArgs>
+      fields: Prisma.ABTestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ABTestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ABTestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>
+        }
+        findFirst: {
+          args: Prisma.ABTestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ABTestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>
+        }
+        findMany: {
+          args: Prisma.ABTestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>[]
+        }
+        create: {
+          args: Prisma.ABTestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>
+        }
+        createMany: {
+          args: Prisma.ABTestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ABTestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>[]
+        }
+        delete: {
+          args: Prisma.ABTestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>
+        }
+        update: {
+          args: Prisma.ABTestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>
+        }
+        deleteMany: {
+          args: Prisma.ABTestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ABTestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ABTestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>[]
+        }
+        upsert: {
+          args: Prisma.ABTestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestPayload>
+        }
+        aggregate: {
+          args: Prisma.ABTestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateABTest>
+        }
+        groupBy: {
+          args: Prisma.ABTestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ABTestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ABTestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ABTestCountAggregateOutputType> | number
+        }
+      }
+    }
+    ABTestVariant: {
+      payload: Prisma.$ABTestVariantPayload<ExtArgs>
+      fields: Prisma.ABTestVariantFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ABTestVariantFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ABTestVariantFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>
+        }
+        findFirst: {
+          args: Prisma.ABTestVariantFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ABTestVariantFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>
+        }
+        findMany: {
+          args: Prisma.ABTestVariantFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>[]
+        }
+        create: {
+          args: Prisma.ABTestVariantCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>
+        }
+        createMany: {
+          args: Prisma.ABTestVariantCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ABTestVariantCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>[]
+        }
+        delete: {
+          args: Prisma.ABTestVariantDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>
+        }
+        update: {
+          args: Prisma.ABTestVariantUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>
+        }
+        deleteMany: {
+          args: Prisma.ABTestVariantDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ABTestVariantUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ABTestVariantUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>[]
+        }
+        upsert: {
+          args: Prisma.ABTestVariantUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ABTestVariantPayload>
+        }
+        aggregate: {
+          args: Prisma.ABTestVariantAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateABTestVariant>
+        }
+        groupBy: {
+          args: Prisma.ABTestVariantGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ABTestVariantGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ABTestVariantCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ABTestVariantCountAggregateOutputType> | number
+        }
+      }
+    }
     Plans: {
       payload: Prisma.$PlansPayload<ExtArgs>
       fields: Prisma.PlansFieldRefs
@@ -1305,151 +1530,151 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    FeatureLimits: {
-      payload: Prisma.$FeatureLimitsPayload<ExtArgs>
-      fields: Prisma.FeatureLimitsFieldRefs
+    Features: {
+      payload: Prisma.$FeaturesPayload<ExtArgs>
+      fields: Prisma.FeaturesFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.FeatureLimitsFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload> | null
+          args: Prisma.FeaturesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.FeatureLimitsFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>
+          args: Prisma.FeaturesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>
         }
         findFirst: {
-          args: Prisma.FeatureLimitsFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload> | null
+          args: Prisma.FeaturesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.FeatureLimitsFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>
+          args: Prisma.FeaturesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>
         }
         findMany: {
-          args: Prisma.FeatureLimitsFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>[]
+          args: Prisma.FeaturesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>[]
         }
         create: {
-          args: Prisma.FeatureLimitsCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>
+          args: Prisma.FeaturesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>
         }
         createMany: {
-          args: Prisma.FeatureLimitsCreateManyArgs<ExtArgs>
+          args: Prisma.FeaturesCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.FeatureLimitsCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>[]
+          args: Prisma.FeaturesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>[]
         }
         delete: {
-          args: Prisma.FeatureLimitsDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>
+          args: Prisma.FeaturesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>
         }
         update: {
-          args: Prisma.FeatureLimitsUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>
+          args: Prisma.FeaturesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>
         }
         deleteMany: {
-          args: Prisma.FeatureLimitsDeleteManyArgs<ExtArgs>
+          args: Prisma.FeaturesDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.FeatureLimitsUpdateManyArgs<ExtArgs>
+          args: Prisma.FeaturesUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.FeatureLimitsUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>[]
+          args: Prisma.FeaturesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>[]
         }
         upsert: {
-          args: Prisma.FeatureLimitsUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitsPayload>
+          args: Prisma.FeaturesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeaturesPayload>
         }
         aggregate: {
-          args: Prisma.FeatureLimitsAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateFeatureLimits>
+          args: Prisma.FeaturesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeatures>
         }
         groupBy: {
-          args: Prisma.FeatureLimitsGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.FeatureLimitsGroupByOutputType>[]
+          args: Prisma.FeaturesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturesGroupByOutputType>[]
         }
         count: {
-          args: Prisma.FeatureLimitsCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.FeatureLimitsCountAggregateOutputType> | number
+          args: Prisma.FeaturesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeaturesCountAggregateOutputType> | number
         }
       }
     }
-    FeatureLimitUsages: {
-      payload: Prisma.$FeatureLimitUsagesPayload<ExtArgs>
-      fields: Prisma.FeatureLimitUsagesFieldRefs
+    FeatureUsages: {
+      payload: Prisma.$FeatureUsagesPayload<ExtArgs>
+      fields: Prisma.FeatureUsagesFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.FeatureLimitUsagesFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload> | null
+          args: Prisma.FeatureUsagesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.FeatureLimitUsagesFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>
+          args: Prisma.FeatureUsagesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>
         }
         findFirst: {
-          args: Prisma.FeatureLimitUsagesFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload> | null
+          args: Prisma.FeatureUsagesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.FeatureLimitUsagesFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>
+          args: Prisma.FeatureUsagesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>
         }
         findMany: {
-          args: Prisma.FeatureLimitUsagesFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>[]
+          args: Prisma.FeatureUsagesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>[]
         }
         create: {
-          args: Prisma.FeatureLimitUsagesCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>
+          args: Prisma.FeatureUsagesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>
         }
         createMany: {
-          args: Prisma.FeatureLimitUsagesCreateManyArgs<ExtArgs>
+          args: Prisma.FeatureUsagesCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.FeatureLimitUsagesCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>[]
+          args: Prisma.FeatureUsagesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>[]
         }
         delete: {
-          args: Prisma.FeatureLimitUsagesDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>
+          args: Prisma.FeatureUsagesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>
         }
         update: {
-          args: Prisma.FeatureLimitUsagesUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>
+          args: Prisma.FeatureUsagesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>
         }
         deleteMany: {
-          args: Prisma.FeatureLimitUsagesDeleteManyArgs<ExtArgs>
+          args: Prisma.FeatureUsagesDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.FeatureLimitUsagesUpdateManyArgs<ExtArgs>
+          args: Prisma.FeatureUsagesUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.FeatureLimitUsagesUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>[]
+          args: Prisma.FeatureUsagesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>[]
         }
         upsert: {
-          args: Prisma.FeatureLimitUsagesUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureLimitUsagesPayload>
+          args: Prisma.FeatureUsagesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeatureUsagesPayload>
         }
         aggregate: {
-          args: Prisma.FeatureLimitUsagesAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateFeatureLimitUsages>
+          args: Prisma.FeatureUsagesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeatureUsages>
         }
         groupBy: {
-          args: Prisma.FeatureLimitUsagesGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.FeatureLimitUsagesGroupByOutputType>[]
+          args: Prisma.FeatureUsagesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeatureUsagesGroupByOutputType>[]
         }
         count: {
-          args: Prisma.FeatureLimitUsagesCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.FeatureLimitUsagesCountAggregateOutputType> | number
+          args: Prisma.FeatureUsagesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeatureUsagesCountAggregateOutputType> | number
         }
       }
     }
@@ -1522,6 +1747,7 @@ export const UsersScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
+  role: 'role',
   firstName: 'firstName',
   lastName: 'lastName',
   status: 'status',
@@ -1630,6 +1856,7 @@ export const LinksScalarFieldEnum = {
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  redirectType: 'redirectType',
   clickCount: 'clickCount',
   passwordHash: 'passwordHash',
   clickLimit: 'clickLimit',
@@ -1654,6 +1881,44 @@ export const LinkClicksScalarFieldEnum = {
 } as const
 
 export type LinkClicksScalarFieldEnum = (typeof LinkClicksScalarFieldEnum)[keyof typeof LinkClicksScalarFieldEnum]
+
+
+export const RedirectRuleScalarFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  priority: 'priority',
+  isActive: 'isActive',
+  conditionType: 'conditionType',
+  conditionValue: 'conditionValue',
+  targetUrl: 'targetUrl',
+  label: 'label'
+} as const
+
+export type RedirectRuleScalarFieldEnum = (typeof RedirectRuleScalarFieldEnum)[keyof typeof RedirectRuleScalarFieldEnum]
+
+
+export const ABTestScalarFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  name: 'name',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ABTestScalarFieldEnum = (typeof ABTestScalarFieldEnum)[keyof typeof ABTestScalarFieldEnum]
+
+
+export const ABTestVariantScalarFieldEnum = {
+  id: 'id',
+  testId: 'testId',
+  name: 'name',
+  url: 'url',
+  weight: 'weight',
+  clicks: 'clicks'
+} as const
+
+export type ABTestVariantScalarFieldEnum = (typeof ABTestVariantScalarFieldEnum)[keyof typeof ABTestVariantScalarFieldEnum]
 
 
 export const PlansScalarFieldEnum = {
@@ -1695,24 +1960,24 @@ export const SubscriptionsScalarFieldEnum = {
 export type SubscriptionsScalarFieldEnum = (typeof SubscriptionsScalarFieldEnum)[keyof typeof SubscriptionsScalarFieldEnum]
 
 
-export const FeatureLimitsScalarFieldEnum = {
+export const FeaturesScalarFieldEnum = {
   id: 'id',
   planId: 'planId',
   featureKey: 'featureKey',
   limitValue: 'limitValue'
 } as const
 
-export type FeatureLimitsScalarFieldEnum = (typeof FeatureLimitsScalarFieldEnum)[keyof typeof FeatureLimitsScalarFieldEnum]
+export type FeaturesScalarFieldEnum = (typeof FeaturesScalarFieldEnum)[keyof typeof FeaturesScalarFieldEnum]
 
 
-export const FeatureLimitUsagesScalarFieldEnum = {
+export const FeatureUsagesScalarFieldEnum = {
   id: 'id',
   subscriptionId: 'subscriptionId',
   featureKey: 'featureKey',
   currentUsed: 'currentUsed'
 } as const
 
-export type FeatureLimitUsagesScalarFieldEnum = (typeof FeatureLimitUsagesScalarFieldEnum)[keyof typeof FeatureLimitUsagesScalarFieldEnum]
+export type FeatureUsagesScalarFieldEnum = (typeof FeatureUsagesScalarFieldEnum)[keyof typeof FeatureUsagesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1872,6 +2137,36 @@ export const LinkClicksOrderByRelevanceFieldEnum = {
 export type LinkClicksOrderByRelevanceFieldEnum = (typeof LinkClicksOrderByRelevanceFieldEnum)[keyof typeof LinkClicksOrderByRelevanceFieldEnum]
 
 
+export const RedirectRuleOrderByRelevanceFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  conditionValue: 'conditionValue',
+  targetUrl: 'targetUrl',
+  label: 'label'
+} as const
+
+export type RedirectRuleOrderByRelevanceFieldEnum = (typeof RedirectRuleOrderByRelevanceFieldEnum)[keyof typeof RedirectRuleOrderByRelevanceFieldEnum]
+
+
+export const ABTestOrderByRelevanceFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  name: 'name'
+} as const
+
+export type ABTestOrderByRelevanceFieldEnum = (typeof ABTestOrderByRelevanceFieldEnum)[keyof typeof ABTestOrderByRelevanceFieldEnum]
+
+
+export const ABTestVariantOrderByRelevanceFieldEnum = {
+  id: 'id',
+  testId: 'testId',
+  name: 'name',
+  url: 'url'
+} as const
+
+export type ABTestVariantOrderByRelevanceFieldEnum = (typeof ABTestVariantOrderByRelevanceFieldEnum)[keyof typeof ABTestVariantOrderByRelevanceFieldEnum]
+
+
 export const PlansOrderByRelevanceFieldEnum = {
   id: 'id'
 } as const
@@ -1898,20 +2193,20 @@ export const SubscriptionsOrderByRelevanceFieldEnum = {
 export type SubscriptionsOrderByRelevanceFieldEnum = (typeof SubscriptionsOrderByRelevanceFieldEnum)[keyof typeof SubscriptionsOrderByRelevanceFieldEnum]
 
 
-export const FeatureLimitsOrderByRelevanceFieldEnum = {
+export const FeaturesOrderByRelevanceFieldEnum = {
   id: 'id',
   planId: 'planId'
 } as const
 
-export type FeatureLimitsOrderByRelevanceFieldEnum = (typeof FeatureLimitsOrderByRelevanceFieldEnum)[keyof typeof FeatureLimitsOrderByRelevanceFieldEnum]
+export type FeaturesOrderByRelevanceFieldEnum = (typeof FeaturesOrderByRelevanceFieldEnum)[keyof typeof FeaturesOrderByRelevanceFieldEnum]
 
 
-export const FeatureLimitUsagesOrderByRelevanceFieldEnum = {
+export const FeatureUsagesOrderByRelevanceFieldEnum = {
   id: 'id',
   subscriptionId: 'subscriptionId'
 } as const
 
-export type FeatureLimitUsagesOrderByRelevanceFieldEnum = (typeof FeatureLimitUsagesOrderByRelevanceFieldEnum)[keyof typeof FeatureLimitUsagesOrderByRelevanceFieldEnum]
+export type FeatureUsagesOrderByRelevanceFieldEnum = (typeof FeatureUsagesOrderByRelevanceFieldEnum)[keyof typeof FeatureUsagesOrderByRelevanceFieldEnum]
 
 
 
@@ -1931,6 +2226,20 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'String[]'
  */
 export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole[]'
+ */
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
@@ -2022,6 +2331,34 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'RedirectType'
+ */
+export type EnumRedirectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RedirectType'>
+    
+
+
+/**
+ * Reference to a field of type 'RedirectType[]'
+ */
+export type ListEnumRedirectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RedirectType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ConditionType'
+ */
+export type EnumConditionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConditionType'>
+    
+
+
+/**
+ * Reference to a field of type 'ConditionType[]'
+ */
+export type ListEnumConditionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConditionType[]'>
     
 
 
@@ -2227,11 +2564,14 @@ export type GlobalOmitConfig = {
   auditLogs?: Prisma.AuditLogsOmit
   links?: Prisma.LinksOmit
   linkClicks?: Prisma.LinkClicksOmit
+  redirectRule?: Prisma.RedirectRuleOmit
+  aBTest?: Prisma.ABTestOmit
+  aBTestVariant?: Prisma.ABTestVariantOmit
   plans?: Prisma.PlansOmit
   planPrices?: Prisma.PlanPricesOmit
   subscriptions?: Prisma.SubscriptionsOmit
-  featureLimits?: Prisma.FeatureLimitsOmit
-  featureLimitUsages?: Prisma.FeatureLimitUsagesOmit
+  features?: Prisma.FeaturesOmit
+  featureUsages?: Prisma.FeatureUsagesOmit
 }
 
 /* Types for Logging */

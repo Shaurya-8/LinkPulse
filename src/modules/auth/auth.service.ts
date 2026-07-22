@@ -1,6 +1,6 @@
 import { v4 as uuid4 } from "uuid";
 
-import { BillingPeriod, PlanType, UserStatus } from "../../../generated/prisma/enums";
+import { BillingPeriod, PlanType, UserRole, UserStatus } from "../../../generated/prisma/enums";
 import { DbClient, prisma } from "../../config/prisma";
 
 import { config } from "../../config";
@@ -62,7 +62,7 @@ export async function sendVerificationEmail(email: string): Promise<string> {
 
 async function activeSession(user: AuthUser, device: DeviceInfo, tx?: DbClient) {
     const sessionId = uuid4() as SessionId
-    const tokens = generateTokenPair(user.id as UserId, user.email, sessionId);
+    const tokens = generateTokenPair(user.id as UserId, user.email, sessionId, user.role);
     const accesToken: AccessToken = tokens.accessToken;
     /**
      * create userDevice or update if already exist
@@ -185,7 +185,7 @@ export async function verifyEmail(requestId: string, device: DeviceInfo): Promis
 
 
 export async function login(dto: LoginDto, device: DeviceInfo): Promise<LoginResult> {
-    const user = await db.findFirst({ where: { email: dto.email } });
+    const user = await db.loginUser(dto.email);
 
     if (!user) throw new NotFoundError('user');
 
@@ -303,11 +303,11 @@ export async function refreshToken(refreshToken: RefreshToken, device: DeviceInf
     /**
      * payload: JwtRefershPayload = {sub: userId,....}
      */
-    const { sub, email, sessionId } = verifyToken<JwtRefreshPayload>(refreshToken, config.jwt.refreshSecret, 'refresh');
+    const { sub, email, sessionId, role } = verifyToken<JwtRefreshPayload>(refreshToken, config.jwt.refreshSecret, 'refresh');
     const oldTokenHash = hashToken(refreshToken);
     await sessionService.getOrRevokeUser(sub, oldTokenHash);
 
-    const tokens = generateTokenPair(sub, email, sessionId);
+    const tokens = generateTokenPair(sub, email, sessionId, role);
     const tokenHash = hashToken(tokens.refreshToken);
 
     const jti = JSON.parse(

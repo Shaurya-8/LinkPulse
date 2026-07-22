@@ -1,9 +1,9 @@
-import { CreateLinkDto } from "../links.schema";
+import { CreateLinkInput } from "../links.schema";
 import { FeatureMapping } from "../feature-map"
 import { FeatureRequest } from "../links.type"
 
 export class LinkFeatureResolver {
-    static resolve(dto: CreateLinkDto): FeatureRequest[] {
+    static resolve(dto: CreateLinkInput): FeatureRequest[] {
         return FeatureMapping
             .filter(item => item.enabled(dto))
             .map(item => ({

@@ -15,7 +15,10 @@ import { deviceInfoMiddleware } from "./middleware/deviceInfo.middleware";
 import { authRouter } from "./modules/auth/auth.routes";
 import { otpRouter } from "./modules/otp/otp.router";
 import { linkRouter } from "./modules/links/links.router";
-import { redirect } from "./modules/links/links.controller";
+import {redirectRouter} from "./modules/links/redirect/redirect.router"
+import { getQueueHealth } from "./jobs/queues";
+import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
+import { analyticsRouter } from "./modules/analytics/analytics.router";
 
 
 export async function createApp(): Promise<Application> {
@@ -32,14 +35,7 @@ export async function createApp(): Promise<Application> {
             }
         )
     );
-    // redirect link api
-
-    app.get('/s/:shortCode', (req: Request, res: Response, next: NextFunction) => {
-        console.log(req.method, req.path);
-        next()
-    },
-        redirect
-    )
+   
 
     app.set('trust-proxy', 1);
 
@@ -112,18 +108,34 @@ export async function createApp(): Promise<Application> {
 
     app.use(cookieParser());
 
+    app.get('/health', (req: Request, res: Response) => {
+        const queueHealth = getQueueHealth();
+        res.json({
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            version: process.env.npm_package_version ?? '1.0.0',
+            environment: config.app.env,
+            queues: queueHealth,
+        });
+    });
+
+
     app.use(globalRateLimiter());
     app.use(deviceInfoMiddleware);
 
 
 
-    app.get('/health', (req: Request, res: Response) => {
-        res.json({ message: "Runing Fine" }).status(200)
-    })
+
     // auth Api
     app.use("/api/v1/auth", authRouter);
     app.use("/api/v1/otp", otpRouter);
     app.use("/api/v1/link", linkRouter);
+    app.use("/api/v1/analytics", analyticsRouter);
 
+    app.use("/", redirectRouter);
+
+
+    app.use(notFoundHandler);
+    app.use(errorHandler);
     return app;
 } 

@@ -17,7 +17,7 @@ function requireDevice(req: Request): DeviceInfo {
 }
 
 function requireUser(req: Request): AuthenticatedRequest['user'] {
-    const user = req.user;
+    const user = (req as AuthenticatedRequest).user;
     if (!user) {
         throw new BadRequestError('Authentication context missing.');
     }
@@ -67,7 +67,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
     try {
         const user = requireUser(req);
         const device = requireDevice(req);
-        await authService.logout(user.id as UserId, user.refreshToken, device);
+        await authService.logout(user.sub as UserId, user.refreshToken, device);
         clearAuthCookies(res);
         successResponse(res, null, 'User logout successfully', 204);
     } catch (err) {
@@ -117,7 +117,7 @@ export async function refreshToken(req: Request, res: Response, next: NextFuncti
 export async function logoutAll(req: Request, res: Response, next: NextFunction) {
     const user = requireUser(req);
     try {
-        const result = await authService.logoutAll(user.id);
+        const result = await authService.logoutAll(user.sub);
         successResponse(res, result, "All sessions revoked successfully", 204);
     } catch (err) {
         next(err)

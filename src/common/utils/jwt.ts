@@ -3,6 +3,7 @@ import { v4 as uuid4 } from "uuid";
 import { config } from "../../config";
 import { AccessToken, RefreshToken, JwtAccessPayload, JwtRefreshPayload, Jti, SessionId, TokenPair, UserId } from "../../types";
 import { UnauthorizedError } from "../errors/AppError";
+import { UserRole } from "../../../generated/prisma/enums";
 
 // function parseExpiresInToSeconds(expiresIn: string): number {
 //     const match = expiresIn.match('/^(\d+)([smhd])$/');
@@ -34,7 +35,8 @@ function parseExpiresInToSeconds(expiresIn: string): number {
 export function generateTokenPair(
     userId: UserId,
     email: string,
-    sessionId: SessionId
+    sessionId: SessionId,
+    role: UserRole
 ): TokenPair {
     const jti = uuid4();
 
@@ -43,12 +45,14 @@ export function generateTokenPair(
         email,
         jti: jti as Jti,
         sessionId,
+        role,
     };
 
     const refreshPayload: JwtRefreshPayload = {
         sub: userId as UserId,
         email,
         sessionId,
+        role
     }
 
     const accessToken = jwt.sign(accessPayload, config.jwt.accessSecret, {

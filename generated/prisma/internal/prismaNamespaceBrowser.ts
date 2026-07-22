@@ -60,11 +60,14 @@ export const ModelName = {
   AuditLogs: 'AuditLogs',
   Links: 'Links',
   LinkClicks: 'LinkClicks',
+  RedirectRule: 'RedirectRule',
+  ABTest: 'ABTest',
+  ABTestVariant: 'ABTestVariant',
   Plans: 'Plans',
   PlanPrices: 'PlanPrices',
   Subscriptions: 'Subscriptions',
-  FeatureLimits: 'FeatureLimits',
-  FeatureLimitUsages: 'FeatureLimitUsages'
+  Features: 'Features',
+  FeatureUsages: 'FeatureUsages'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -113,6 +116,7 @@ export const UsersScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
+  role: 'role',
   firstName: 'firstName',
   lastName: 'lastName',
   status: 'status',
@@ -221,6 +225,7 @@ export const LinksScalarFieldEnum = {
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  redirectType: 'redirectType',
   clickCount: 'clickCount',
   passwordHash: 'passwordHash',
   clickLimit: 'clickLimit',
@@ -245,6 +250,44 @@ export const LinkClicksScalarFieldEnum = {
 } as const
 
 export type LinkClicksScalarFieldEnum = (typeof LinkClicksScalarFieldEnum)[keyof typeof LinkClicksScalarFieldEnum]
+
+
+export const RedirectRuleScalarFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  priority: 'priority',
+  isActive: 'isActive',
+  conditionType: 'conditionType',
+  conditionValue: 'conditionValue',
+  targetUrl: 'targetUrl',
+  label: 'label'
+} as const
+
+export type RedirectRuleScalarFieldEnum = (typeof RedirectRuleScalarFieldEnum)[keyof typeof RedirectRuleScalarFieldEnum]
+
+
+export const ABTestScalarFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  name: 'name',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ABTestScalarFieldEnum = (typeof ABTestScalarFieldEnum)[keyof typeof ABTestScalarFieldEnum]
+
+
+export const ABTestVariantScalarFieldEnum = {
+  id: 'id',
+  testId: 'testId',
+  name: 'name',
+  url: 'url',
+  weight: 'weight',
+  clicks: 'clicks'
+} as const
+
+export type ABTestVariantScalarFieldEnum = (typeof ABTestVariantScalarFieldEnum)[keyof typeof ABTestVariantScalarFieldEnum]
 
 
 export const PlansScalarFieldEnum = {
@@ -286,24 +329,24 @@ export const SubscriptionsScalarFieldEnum = {
 export type SubscriptionsScalarFieldEnum = (typeof SubscriptionsScalarFieldEnum)[keyof typeof SubscriptionsScalarFieldEnum]
 
 
-export const FeatureLimitsScalarFieldEnum = {
+export const FeaturesScalarFieldEnum = {
   id: 'id',
   planId: 'planId',
   featureKey: 'featureKey',
   limitValue: 'limitValue'
 } as const
 
-export type FeatureLimitsScalarFieldEnum = (typeof FeatureLimitsScalarFieldEnum)[keyof typeof FeatureLimitsScalarFieldEnum]
+export type FeaturesScalarFieldEnum = (typeof FeaturesScalarFieldEnum)[keyof typeof FeaturesScalarFieldEnum]
 
 
-export const FeatureLimitUsagesScalarFieldEnum = {
+export const FeatureUsagesScalarFieldEnum = {
   id: 'id',
   subscriptionId: 'subscriptionId',
   featureKey: 'featureKey',
   currentUsed: 'currentUsed'
 } as const
 
-export type FeatureLimitUsagesScalarFieldEnum = (typeof FeatureLimitUsagesScalarFieldEnum)[keyof typeof FeatureLimitUsagesScalarFieldEnum]
+export type FeatureUsagesScalarFieldEnum = (typeof FeatureUsagesScalarFieldEnum)[keyof typeof FeatureUsagesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -463,6 +506,36 @@ export const LinkClicksOrderByRelevanceFieldEnum = {
 export type LinkClicksOrderByRelevanceFieldEnum = (typeof LinkClicksOrderByRelevanceFieldEnum)[keyof typeof LinkClicksOrderByRelevanceFieldEnum]
 
 
+export const RedirectRuleOrderByRelevanceFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  conditionValue: 'conditionValue',
+  targetUrl: 'targetUrl',
+  label: 'label'
+} as const
+
+export type RedirectRuleOrderByRelevanceFieldEnum = (typeof RedirectRuleOrderByRelevanceFieldEnum)[keyof typeof RedirectRuleOrderByRelevanceFieldEnum]
+
+
+export const ABTestOrderByRelevanceFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  name: 'name'
+} as const
+
+export type ABTestOrderByRelevanceFieldEnum = (typeof ABTestOrderByRelevanceFieldEnum)[keyof typeof ABTestOrderByRelevanceFieldEnum]
+
+
+export const ABTestVariantOrderByRelevanceFieldEnum = {
+  id: 'id',
+  testId: 'testId',
+  name: 'name',
+  url: 'url'
+} as const
+
+export type ABTestVariantOrderByRelevanceFieldEnum = (typeof ABTestVariantOrderByRelevanceFieldEnum)[keyof typeof ABTestVariantOrderByRelevanceFieldEnum]
+
+
 export const PlansOrderByRelevanceFieldEnum = {
   id: 'id'
 } as const
@@ -489,18 +562,18 @@ export const SubscriptionsOrderByRelevanceFieldEnum = {
 export type SubscriptionsOrderByRelevanceFieldEnum = (typeof SubscriptionsOrderByRelevanceFieldEnum)[keyof typeof SubscriptionsOrderByRelevanceFieldEnum]
 
 
-export const FeatureLimitsOrderByRelevanceFieldEnum = {
+export const FeaturesOrderByRelevanceFieldEnum = {
   id: 'id',
   planId: 'planId'
 } as const
 
-export type FeatureLimitsOrderByRelevanceFieldEnum = (typeof FeatureLimitsOrderByRelevanceFieldEnum)[keyof typeof FeatureLimitsOrderByRelevanceFieldEnum]
+export type FeaturesOrderByRelevanceFieldEnum = (typeof FeaturesOrderByRelevanceFieldEnum)[keyof typeof FeaturesOrderByRelevanceFieldEnum]
 
 
-export const FeatureLimitUsagesOrderByRelevanceFieldEnum = {
+export const FeatureUsagesOrderByRelevanceFieldEnum = {
   id: 'id',
   subscriptionId: 'subscriptionId'
 } as const
 
-export type FeatureLimitUsagesOrderByRelevanceFieldEnum = (typeof FeatureLimitUsagesOrderByRelevanceFieldEnum)[keyof typeof FeatureLimitUsagesOrderByRelevanceFieldEnum]
+export type FeatureUsagesOrderByRelevanceFieldEnum = (typeof FeatureUsagesOrderByRelevanceFieldEnum)[keyof typeof FeatureUsagesOrderByRelevanceFieldEnum]
 

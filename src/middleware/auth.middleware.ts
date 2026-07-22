@@ -36,11 +36,12 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
                 logger.warn('Failed to update session last used timestamp:', err);
             });
 
-        req.user = {
+        (req as AuthenticatedRequest).user = {
             sub: payload.sub as UserId,
             email: payload.email,
             refreshToken: session.refreshToken as RefreshToken,
             sessionId: session.id as SessionId,
+            role: payload.role
         };
         next();
     } catch (err) {

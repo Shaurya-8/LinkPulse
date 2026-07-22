@@ -225,7 +225,7 @@ export type SubscriptionsWhereInput = {
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
   plan?: Prisma.XOR<Prisma.PlansScalarRelationFilter, Prisma.PlansWhereInput>
   planPrice?: Prisma.XOR<Prisma.PlanPricesNullableScalarRelationFilter, Prisma.PlanPricesWhereInput> | null
-  featureUsage?: Prisma.FeatureLimitUsagesListRelationFilter
+  featureUsage?: Prisma.FeatureUsagesListRelationFilter
 }
 
 export type SubscriptionsOrderByWithRelationInput = {
@@ -242,7 +242,7 @@ export type SubscriptionsOrderByWithRelationInput = {
   user?: Prisma.UsersOrderByWithRelationInput
   plan?: Prisma.PlansOrderByWithRelationInput
   planPrice?: Prisma.PlanPricesOrderByWithRelationInput
-  featureUsage?: Prisma.FeatureLimitUsagesOrderByRelationAggregateInput
+  featureUsage?: Prisma.FeatureUsagesOrderByRelationAggregateInput
   _relevance?: Prisma.SubscriptionsOrderByRelevanceInput
 }
 
@@ -263,7 +263,7 @@ export type SubscriptionsWhereUniqueInput = Prisma.AtLeast<{
   user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
   plan?: Prisma.XOR<Prisma.PlansScalarRelationFilter, Prisma.PlansWhereInput>
   planPrice?: Prisma.XOR<Prisma.PlanPricesNullableScalarRelationFilter, Prisma.PlanPricesWhereInput> | null
-  featureUsage?: Prisma.FeatureLimitUsagesListRelationFilter
+  featureUsage?: Prisma.FeatureUsagesListRelationFilter
 }, "id">
 
 export type SubscriptionsOrderByWithAggregationInput = {
@@ -309,7 +309,7 @@ export type SubscriptionsCreateInput = {
   user: Prisma.UsersCreateNestedOneWithoutSubscriptionsInput
   plan: Prisma.PlansCreateNestedOneWithoutSubscriptionsInput
   planPrice?: Prisma.PlanPricesCreateNestedOneWithoutSubscriptionsInput
-  featureUsage?: Prisma.FeatureLimitUsagesCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsUncheckedCreateInput = {
@@ -323,7 +323,7 @@ export type SubscriptionsUncheckedCreateInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsUpdateInput = {
@@ -337,7 +337,7 @@ export type SubscriptionsUpdateInput = {
   user?: Prisma.UsersUpdateOneRequiredWithoutSubscriptionsNestedInput
   plan?: Prisma.PlansUpdateOneRequiredWithoutSubscriptionsNestedInput
   planPrice?: Prisma.PlanPricesUpdateOneWithoutSubscriptionsNestedInput
-  featureUsage?: Prisma.FeatureLimitUsagesUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateInput = {
@@ -351,7 +351,7 @@ export type SubscriptionsUncheckedUpdateInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsCreateManyInput = {
@@ -604,7 +604,7 @@ export type SubscriptionsCreateWithoutUserInput = {
   updatedAt?: Date | string
   plan: Prisma.PlansCreateNestedOneWithoutSubscriptionsInput
   planPrice?: Prisma.PlanPricesCreateNestedOneWithoutSubscriptionsInput
-  featureUsage?: Prisma.FeatureLimitUsagesCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsUncheckedCreateWithoutUserInput = {
@@ -617,7 +617,7 @@ export type SubscriptionsUncheckedCreateWithoutUserInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsCreateOrConnectWithoutUserInput = {
@@ -672,7 +672,7 @@ export type SubscriptionsCreateWithoutPlanInput = {
   updatedAt?: Date | string
   user: Prisma.UsersCreateNestedOneWithoutSubscriptionsInput
   planPrice?: Prisma.PlanPricesCreateNestedOneWithoutSubscriptionsInput
-  featureUsage?: Prisma.FeatureLimitUsagesCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsUncheckedCreateWithoutPlanInput = {
@@ -685,7 +685,7 @@ export type SubscriptionsUncheckedCreateWithoutPlanInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsCreateOrConnectWithoutPlanInput = {
@@ -724,7 +724,7 @@ export type SubscriptionsCreateWithoutPlanPriceInput = {
   updatedAt?: Date | string
   user: Prisma.UsersCreateNestedOneWithoutSubscriptionsInput
   plan: Prisma.PlansCreateNestedOneWithoutSubscriptionsInput
-  featureUsage?: Prisma.FeatureLimitUsagesCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsUncheckedCreateWithoutPlanPriceInput = {
@@ -737,7 +737,7 @@ export type SubscriptionsUncheckedCreateWithoutPlanPriceInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type SubscriptionsCreateOrConnectWithoutPlanPriceInput = {
@@ -856,7 +856,7 @@ export type SubscriptionsUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plan?: Prisma.PlansUpdateOneRequiredWithoutSubscriptionsNestedInput
   planPrice?: Prisma.PlanPricesUpdateOneWithoutSubscriptionsNestedInput
-  featureUsage?: Prisma.FeatureLimitUsagesUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateWithoutUserInput = {
@@ -869,7 +869,7 @@ export type SubscriptionsUncheckedUpdateWithoutUserInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateManyWithoutUserInput = {
@@ -906,7 +906,7 @@ export type SubscriptionsUpdateWithoutPlanInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UsersUpdateOneRequiredWithoutSubscriptionsNestedInput
   planPrice?: Prisma.PlanPricesUpdateOneWithoutSubscriptionsNestedInput
-  featureUsage?: Prisma.FeatureLimitUsagesUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateWithoutPlanInput = {
@@ -919,7 +919,7 @@ export type SubscriptionsUncheckedUpdateWithoutPlanInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateManyWithoutPlanInput = {
@@ -956,7 +956,7 @@ export type SubscriptionsUpdateWithoutPlanPriceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UsersUpdateOneRequiredWithoutSubscriptionsNestedInput
   plan?: Prisma.PlansUpdateOneRequiredWithoutSubscriptionsNestedInput
-  featureUsage?: Prisma.FeatureLimitUsagesUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateWithoutPlanPriceInput = {
@@ -969,7 +969,7 @@ export type SubscriptionsUncheckedUpdateWithoutPlanPriceInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  featureUsage?: Prisma.FeatureLimitUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
+  featureUsage?: Prisma.FeatureUsagesUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type SubscriptionsUncheckedUpdateManyWithoutPlanPriceInput = {
@@ -1011,7 +1011,7 @@ export type SubscriptionsCountOutputTypeDefaultArgs<ExtArgs extends runtime.Type
  * SubscriptionsCountOutputType without action
  */
 export type SubscriptionsCountOutputTypeCountFeatureUsageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.FeatureLimitUsagesWhereInput
+  where?: Prisma.FeatureUsagesWhereInput
 }
 
 
@@ -1103,7 +1103,7 @@ export type $SubscriptionsPayload<ExtArgs extends runtime.Types.Extensions.Inter
     user: Prisma.$UsersPayload<ExtArgs>
     plan: Prisma.$PlansPayload<ExtArgs>
     planPrice: Prisma.$PlanPricesPayload<ExtArgs> | null
-    featureUsage: Prisma.$FeatureLimitUsagesPayload<ExtArgs>[]
+    featureUsage: Prisma.$FeatureUsagesPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1513,7 +1513,7 @@ export interface Prisma__SubscriptionsClient<T, Null = never, ExtArgs extends ru
   user<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   plan<T extends Prisma.PlansDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlansDefaultArgs<ExtArgs>>): Prisma.Prisma__PlansClient<runtime.Types.Result.GetResult<Prisma.$PlansPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   planPrice<T extends Prisma.Subscriptions$planPriceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subscriptions$planPriceArgs<ExtArgs>>): Prisma.Prisma__PlanPricesClient<runtime.Types.Result.GetResult<Prisma.$PlanPricesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  featureUsage<T extends Prisma.Subscriptions$featureUsageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subscriptions$featureUsageArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeatureLimitUsagesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  featureUsage<T extends Prisma.Subscriptions$featureUsageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Subscriptions$featureUsageArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeatureUsagesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1986,23 +1986,23 @@ export type Subscriptions$planPriceArgs<ExtArgs extends runtime.Types.Extensions
  */
 export type Subscriptions$featureUsageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the FeatureLimitUsages
+   * Select specific fields to fetch from the FeatureUsages
    */
-  select?: Prisma.FeatureLimitUsagesSelect<ExtArgs> | null
+  select?: Prisma.FeatureUsagesSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the FeatureLimitUsages
+   * Omit specific fields from the FeatureUsages
    */
-  omit?: Prisma.FeatureLimitUsagesOmit<ExtArgs> | null
+  omit?: Prisma.FeatureUsagesOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.FeatureLimitUsagesInclude<ExtArgs> | null
-  where?: Prisma.FeatureLimitUsagesWhereInput
-  orderBy?: Prisma.FeatureLimitUsagesOrderByWithRelationInput | Prisma.FeatureLimitUsagesOrderByWithRelationInput[]
-  cursor?: Prisma.FeatureLimitUsagesWhereUniqueInput
+  include?: Prisma.FeatureUsagesInclude<ExtArgs> | null
+  where?: Prisma.FeatureUsagesWhereInput
+  orderBy?: Prisma.FeatureUsagesOrderByWithRelationInput | Prisma.FeatureUsagesOrderByWithRelationInput[]
+  cursor?: Prisma.FeatureUsagesWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.FeatureLimitUsagesScalarFieldEnum | Prisma.FeatureLimitUsagesScalarFieldEnum[]
+  distinct?: Prisma.FeatureUsagesScalarFieldEnum | Prisma.FeatureUsagesScalarFieldEnum[]
 }
 
 /**

@@ -1,9 +1,9 @@
 import { PrismaClient, BillingPeriod, SubscriptionStatus, Subscriptions, PlanType, FeatureKey } from "../../../generated/prisma/client";
 import { DbClient, prisma } from "../../config/prisma";
 import { FeatureId, PlanId, PlanPriceId, SubscriptionId, UserId } from "../../types";
-import { FeatureLimitService } from "../links/features/featureLimit/feature-limit.service";
+import { FeatureService } from "../links/features/feature.service";
 import { SubscriptionRepository } from "./subscription.repository";
-import { FeatureLimitUsedService } from "../links/features/featureLimitUsed/featureUsed-limit.service"
+import { FeatureUsedService } from "../links/features/featureLimitUsed/featureUsed-limit.service"
 import { FeatureState, SubscriptionWithFeatures, SubscriptionWithPlan } from "./types";
 import { SubscriptionError } from "../../common/errors/AppError";
 import { BatchPayload } from "../../../generated/prisma/internal/prismaNamespace";
@@ -17,8 +17,8 @@ export class SubscriptionService {
     private _planPriceService?: PlanPriceService;
 
     private subscriptionRepository = new SubscriptionRepository(prisma);
-    private _featuresLimitService?: FeatureLimitService;
-    private _featureLimitUsegeService?: FeatureLimitUsedService;
+    private _featuresService?: FeatureService;
+    private _featureLimitUsegeService?: FeatureUsedService;
 
     get planService() {
         return this._planService ??= new PlanService();
@@ -27,11 +27,11 @@ export class SubscriptionService {
         return this._planPriceService ??= new PlanPriceService();
     }
 
-    get featureLimit() {
-        return this._featuresLimitService ??= new FeatureLimitService();
+    get featuresService() {
+        return this._featuresService ??= new FeatureService();
     }
     get featureLimitUsed() {
-        return this._featureLimitUsegeService ??= new FeatureLimitUsedService();
+        return this._featureLimitUsegeService ??= new FeatureUsedService();
     }
 
     /**
@@ -150,7 +150,7 @@ export class SubscriptionService {
         );
 
         const features: FeatureState = {};
-        for (const limit of subscription.plan.featureLimits) {
+        for (const limit of subscription.plan.features) {
             features[limit.featureKey as FeatureKey] = {
                 limit: limit.limitValue,
                 used: usageMap.get(limit.featureKey) ?? 0,
@@ -171,7 +171,7 @@ export class SubscriptionService {
     async changePlan(subscriptionId: SubscriptionId, newPlanId: PlanId, tx?: DbClient): Promise<Subscriptions> {
         const subscription = await this.subscriptionRepository.updatePlan(subscriptionId, newPlanId, tx);
 
-        await prisma.featureLimitUsages.deleteMany({
+        await prisma.featureUsages.deleteMany({
             where: {
                 subscriptionId,
             },
@@ -214,7 +214,7 @@ export class SubscriptionService {
         planId: PlanId,
         tx?: DbClient
     ): Promise<void> {
-        const limits = await this.featureLimit.getFeaturKey(planId, tx);
+        const limits = await this.featuresService.getFeaturKey(planId, tx);
 
         if (!limits.length) return;
 

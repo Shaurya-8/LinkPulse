@@ -1,7 +1,7 @@
 import { BatchPayload } from "../../../../../generated/prisma/internal/prismaNamespace";
 
 import { DbClient, prisma } from "../../../../config/prisma";
-import { FeatureKey, FeatureLimits, FeatureLimitUsages } from "../../../../../generated/prisma/client";
+import { FeatureKey, FeatureUsages } from "../../../../../generated/prisma/client";
 
 import { FeatureId, PlanId, SubscriptionId } from "../../../../types";
 
@@ -9,11 +9,10 @@ import { FeatureId, PlanId, SubscriptionId } from "../../../../types";
 import { BadRequestError } from "../../../../common/errors/AppError";
 
 import { FeatureLimitUsedRepository } from "./featureUsed-limit.repository";
-import { FeatureLimitRepository } from "../featureLimit/feature-limit.repository";
 
 
-export class FeatureLimitUsedService {
-    cashedFeaturesLimitUsed: FeatureLimitUsages[] | null = null;
+export class FeatureUsedService {
+    cashedFeaturesLimitUsed: FeatureUsages[] | null = null;
     // featureLimitService = new FeatureLimitService();
     featureLimitUsedRepository = new FeatureLimitUsedRepository(prisma);
 
@@ -22,7 +21,7 @@ export class FeatureLimitUsedService {
         tx?: DbClient): Promise<void> {
         return this.featureLimitUsedRepository.lock(subscriptionId, featureKeys, tx);
     }
-    async getBySubscription(SubscriptionId: SubscriptionId, tx?: DbClient): Promise<FeatureLimitUsages[]> {
+    async getBySubscription(SubscriptionId: SubscriptionId, tx?: DbClient): Promise<FeatureUsages[]> {
         if (this.cashedFeaturesLimitUsed) {
             return this.cashedFeaturesLimitUsed;
         }
@@ -35,7 +34,7 @@ export class FeatureLimitUsedService {
         return featuresLimitUsed;
     }
 
-    async getById(id: string, tx?: DbClient): Promise<FeatureLimitUsages> {
+    async getById(id: string, tx?: DbClient): Promise<FeatureUsages> {
         const featureLimitUsed = await this.featureLimitUsedRepository.getById(id, tx);
         if (!featureLimitUsed) {
             throw new BadRequestError("unable to get feature limit used");
@@ -46,7 +45,7 @@ export class FeatureLimitUsedService {
     async create(subscriptionId: SubscriptionId,
         featureKey: FeatureKey,
         tx?: DbClient
-    ): Promise<FeatureLimitUsages> {
+    ): Promise<FeatureUsages> {
         return this.featureLimitUsedRepository.create({
             subscriptionId,
             featureKey: featureKey

@@ -1,7 +1,8 @@
-import { Prisma, PrismaClient, FeatureLimitUsages, FeatureLimits, FeatureKey } from "../../../../generated/prisma/client";
+import { Prisma, PrismaClient, FeatureUsages, Features, FeatureKey } from "../../../../generated/prisma/client";
 import { DbClient } from "../../../config/prisma";
+import { PlanId } from "../../../types";
 
-export class FeatureRepository {
+export class FeaturesRepository {
     constructor(private readonly prisma: PrismaClient) { }
 
     // =====================================================
@@ -12,7 +13,7 @@ export class FeatureRepository {
         id: string,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.findUnique({
+        return tx.featureUsages.findUnique({
             where: { id },
         });
     }
@@ -21,25 +22,42 @@ export class FeatureRepository {
         featureKey: FeatureKey,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimits.findFirst({
+        return tx.features.findFirst({
             where: { featureKey },
         });
     }
 
-    create(
-        data: Prisma.FeatureLimitUsagesCreateInput,
+    findFeatureKey(
+        planId: PlanId,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.create({
+        return tx.features.findMany({
+            where: {
+                planId,
+            },
+            select: {
+                featureKey: true
+            },
+            orderBy: {
+                featureKey: "asc",
+            },
+        });
+    }
+
+    create(
+        data: Prisma.FeatureUsagesCreateInput,
+        tx: DbClient = this.prisma
+    ) {
+        return tx.featureUsages.create({
             data,
         });
     }
 
     createMany(
-        data: Prisma.FeatureLimitUsagesCreateManyInput[],
+        data: Prisma.FeatureUsagesCreateManyInput[],
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.createMany({
+        return tx.featureUsages.createMany({
             data,
             skipDuplicates: true,
         });
@@ -47,10 +65,10 @@ export class FeatureRepository {
 
     update(
         id: string,
-        data: Prisma.FeatureLimitsUpdateInput,
+        data: Prisma.FeaturesUpdateInput,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.update({
+        return tx.featureUsages.update({
             where: { id },
             data,
         });
@@ -61,7 +79,7 @@ export class FeatureRepository {
         tx: DbClient = this.prisma
     ) {
 
-        return tx.featureLimitUsages.delete({
+        return tx.featureUsages.delete({
             where: { id },
         });
     }
@@ -78,7 +96,7 @@ export class FeatureRepository {
         featureKey: FeatureKey,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimits.findUnique({
+        return tx.features.findUnique({
             where: {
                 planId_featureKey: {
                     planId,
@@ -92,7 +110,7 @@ export class FeatureRepository {
         planId: string,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimits.findMany({
+        return tx.features.findMany({
             where: {
                 planId,
             },
@@ -108,7 +126,7 @@ export class FeatureRepository {
         limitValue: number,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimits.upsert({
+        return tx.features.upsert({
             where: {
                 planId_featureKey: {
                     planId,
@@ -130,7 +148,7 @@ export class FeatureRepository {
         planId: string,
         tx: DbClient = this.prisma
     ): Promise<Prisma.BatchPayload> {
-        return tx.featureLimits.deleteMany({
+        return tx.features.deleteMany({
             where: {
                 planId,
             },
@@ -148,7 +166,7 @@ export class FeatureRepository {
         featureKey: FeatureKey,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.findUnique({
+        return tx.featureUsages.findUnique({
             where: {
                 subscriptionId_featureKey: {
                     subscriptionId,
@@ -162,7 +180,7 @@ export class FeatureRepository {
         subscriptionId: string,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.findMany({
+        return tx.featureUsages.findMany({
             where: {
                 subscriptionId,
             },
@@ -174,10 +192,10 @@ export class FeatureRepository {
 
 
     initializeUsage(
-        data: Prisma.FeatureLimitUsagesCreateManyInput[],
+        data: Prisma.FeatureUsagesCreateManyInput[],
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.createMany({
+        return tx.featureUsages.createMany({
             data,
             skipDuplicates: true,
         });
@@ -189,7 +207,7 @@ export class FeatureRepository {
         amount: number,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.update({
+        return tx.featureUsages.update({
             where: {
                 subscriptionId_featureKey: {
                     subscriptionId,
@@ -210,7 +228,7 @@ export class FeatureRepository {
         amount: number,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.update({
+        return tx.featureUsages.update({
             where: {
                 subscriptionId_featureKey: {
                     subscriptionId,
@@ -229,7 +247,7 @@ export class FeatureRepository {
         subscriptionId: string,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.updateMany({
+        return tx.featureUsages.updateMany({
             where: {
                 subscriptionId,
             },
@@ -244,7 +262,7 @@ export class FeatureRepository {
         featureKey: FeatureKey,
         tx: DbClient = this.prisma
     ) {
-        return tx.featureLimitUsages.delete({
+        return tx.featureUsages.delete({
             where: {
                 subscriptionId_featureKey: {
                     subscriptionId,
@@ -268,7 +286,7 @@ export class FeatureRepository {
             include: {
                 plan: {
                     include: {
-                        featureLimits: true,
+                        features: true,
                     },
                 },
                 featureUsage: true,
@@ -277,7 +295,7 @@ export class FeatureRepository {
 
         if (!subscription) return null;
 
-        const limit = subscription.plan.featureLimits.find(
+        const limit = subscription.plan.features.find(
             f => f.featureKey === featureKey
         );
 
@@ -307,7 +325,7 @@ export class FeatureRepository {
             include: {
                 plan: {
                     include: {
-                        featureLimits: true,
+                        features: true,
                     },
                 },
                 featureUsage: true,
@@ -323,7 +341,7 @@ export class FeatureRepository {
             ])
         );
 
-        return subscription.plan.featureLimits.map(limit => {
+        return subscription.plan.features.map(limit => {
             const used = usageMap.get(limit.featureKey) ?? 0;
 
             return {

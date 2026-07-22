@@ -23,7 +23,8 @@ function getDevice(req: Request): DeviceInfo {
 export async function verify(req: Request, res: Response, next: NextFunction): Promise<void> {
 
     const device = getDevice(req);
-    const verificationDto = req.body as VerifyOtpDto;
+    const verificationDto = req.validated.body as VerifyOtpDto;
+
     try {
 
         const result = await otpServie.verify(verificationDto, device);

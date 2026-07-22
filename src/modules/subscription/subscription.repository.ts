@@ -22,7 +22,7 @@ export class SubscriptionRepository {
             include: {
                 plan: {
                     include: {
-                        featureLimits: true
+                        features: true
                     },
                 },
                 featureUsage: true,
@@ -45,7 +45,7 @@ export class SubscriptionRepository {
             include: {
                 plan: {
                     include: {
-                        featureLimits: true
+                        features: true
                     },
                 },
                 featureUsage: true,

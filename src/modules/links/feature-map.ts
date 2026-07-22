@@ -1,4 +1,4 @@
-import { CreateLinkDto } from "./links.schema";
+import { CreateLinkInput } from "./links.schema";
 
 import { FeatureKey } from "../../../generated/prisma/enums";
 export const FeatureMapping = [
@@ -8,18 +8,18 @@ export const FeatureMapping = [
     },
     {
         FeatureKey: FeatureKey.CUSTOM_ALIAS,
-        enabled: (dto: CreateLinkDto) => !!dto.customAlias,
+        enabled: (dto: CreateLinkInput) => !!dto.customAlias,
     },
     {
         FeatureKey: FeatureKey.PASSWORD_PROTECTION,
-        enabled: (dto: CreateLinkDto) => !!dto.passwordHash,
+        enabled: (dto: CreateLinkInput) => !!dto.passwordHash,
     },
     {
         FeatureKey: FeatureKey.LINK_EXPIRATION,
-        enabled: (dto: CreateLinkDto) => !!dto.expiresAt,
+        enabled: (dto: CreateLinkInput) => !!dto.expiresAt,
     },
     {
         FeatureKey: FeatureKey.ONE_TIME_LINKS,
-        enabled: (dto: CreateLinkDto) => dto.isOneTime === true,
+        enabled: (dto: CreateLinkInput) => dto.isOneTime === true,
     },
 ];

@@ -12,7 +12,10 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
+enum UserRole {
+  USER
+  ADMIN
+}
 enum UserStatus{
     PENDING
     ACTIVE
@@ -43,6 +46,23 @@ enum AuditAction{
   DEVICE_REMOVED
   SESSION_EXPIRED
   RATE_LIMIT_HIT
+}
+
+// ─────────────────────────────────────────────
+// Redirect
+// ─────────────────────────────────────────────
+enum RedirectType {
+  TEMPORARY
+  PERMANENT
+}
+
+enum ConditionType {
+  DEVICE
+  GEO
+  LANGUAGE
+  TIME_OF_DAY
+  DAY_OF_WEEK
+  DATE_RANGE
 }
 
 
@@ -105,7 +125,7 @@ model Users {
   id            String      @id @default(uuid()) @db.Uuid
   email         String      @unique @db.VarChar(255)
   passwordHash  String      @map("password_hash") @db.Text
-  
+  role          UserRole    @default(USER)
   firstName     String      @db.VarChar(100) @map("first_name")
   lastName      String?     @db.VarChar(100)  @map("last_name")
 
@@ -133,7 +153,7 @@ model Users {
   @@index([createdAt])
   @@index([deletedAt])
   @@index([lastLoginAt])
-  @@index([status, createdAt])
+  @@index([emailVerified, createdAt])
 
   @@map("users") 
 }
@@ -269,19 +289,25 @@ model Links {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
+  redirectType  RedirectType @default(TEMPORARY)
+
   clickCount    Int       @default(0)
 
   passwordHash  String?   @map("password_hash")    
-  clickLimit    Int       @default(0) @map("click_limit")
-  userId        String    @map("user_id") @db.Uuid
+  clickLimit    Int       @default(1000) @map("click_limit")
+  userId        String?    @map("user_id") @db.Uuid
 
-  user          Users       @relation (fields: [userId], references: [id], onDelete: Cascade)
+  user          Users?       @relation (fields: [userId], references: [id], onDelete: Cascade)
   
   clicks        LinkClicks[]
+  redirectRules  RedirectRule[]
+  abTests        ABTest[]
 
-  @@index([expiresAt, isActive])
+
+
+  @@index([isActive, expiresAt])
   @@index([userId, isActive, expiresAt])
-  @@index([expiresAt])
+  @@index([userId, expiresAt])
   @@index([userId])
   @@index([createdAt])
 
@@ -310,6 +336,62 @@ model LinkClicks {
   @@map("link_clicks")
 }
 
+
+
+// ─────────────────────────────────────────────
+// ADVANCED REDIRECTION (PREMIUM)
+// ─────────────────────────────────────────────
+
+model RedirectRule {
+  id       String         @id @default(uuid())  @db.Uuid 
+  linkId   String         @db.Uuid
+  priority Int    @default(0)
+  isActive Boolean @default(true)
+
+  conditionType  ConditionType
+  conditionValue String // JSON: { values: string[], operator: 'includes'|'equals' }
+
+  targetUrl String
+  label     String?
+
+  link Links @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId])
+  @@map("redirect_rules")
+}
+
+
+model ABTest {
+  id       String          @id @default(uuid()) @db.Uuid
+  linkId   String          @db.Uuid
+  name     String
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants ABTestVariant[]
+  link     Links            @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId])
+  @@map("ab_tests")
+}
+
+model ABTestVariant {
+  id     String       @id @default(uuid()) @db.Uuid
+  testId String       @db.Uuid
+  name   String
+  url    String
+  weight Int          @default(50) // 0–100
+  clicks Int          @default(0)
+
+  test ABTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@index([testId])
+  @@map("ab_test_variants")
+}
+
+
 model Plans {
   id        String   @id @default(uuid()) @db.Uuid
   name      PlanType @unique
@@ -318,7 +400,7 @@ model Plans {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   prices         PlanPrices[]
-  featureLimits  FeatureLimits[]
+  features  Features[]
   subscriptions  Subscriptions[]
 
   @@map("plans")
@@ -367,7 +449,7 @@ model Subscriptions {
 
   planPrice      PlanPrices?          @relation(fields: [planPriceId], references: [id])
 
-  featureUsage   FeatureLimitUsages[]
+  featureUsage   FeatureUsages[]
 
   @@index([userId])
   @@index([status])
@@ -377,7 +459,7 @@ model Subscriptions {
   @@map("subscriptions")
 }
 
-model FeatureLimits {
+model Features {
   id            String      @id @default(uuid()) @db.Uuid
 
   planId        String      @db.Uuid @map("plan_id")
@@ -391,7 +473,7 @@ model FeatureLimits {
   @@map("feature_limits")
 }
 
-model FeatureLimitUsages {
+model FeatureUsages {
   id               String          @id @default(uuid()) @db.Uuid
 
   subscriptionId   String          @db.Uuid @map("subscription_id")

@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const UserRole = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
 export const UserStatus = {
   PENDING: 'PENDING',
   ACTIVE: 'ACTIVE',
@@ -48,6 +56,26 @@ export const AuditAction = {
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const RedirectType = {
+  TEMPORARY: 'TEMPORARY',
+  PERMANENT: 'PERMANENT'
+} as const
+
+export type RedirectType = (typeof RedirectType)[keyof typeof RedirectType]
+
+
+export const ConditionType = {
+  DEVICE: 'DEVICE',
+  GEO: 'GEO',
+  LANGUAGE: 'LANGUAGE',
+  TIME_OF_DAY: 'TIME_OF_DAY',
+  DAY_OF_WEEK: 'DAY_OF_WEEK',
+  DATE_RANGE: 'DATE_RANGE'
+} as const
+
+export type ConditionType = (typeof ConditionType)[keyof typeof ConditionType]
 
 
 export const FeatureKey = {

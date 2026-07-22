@@ -50,6 +50,7 @@ export type LinksMinAggregateOutputType = {
   expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  redirectType: $Enums.RedirectType | null
   clickCount: number | null
   passwordHash: string | null
   clickLimit: number | null
@@ -70,6 +71,7 @@ export type LinksMaxAggregateOutputType = {
   expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  redirectType: $Enums.RedirectType | null
   clickCount: number | null
   passwordHash: string | null
   clickLimit: number | null
@@ -90,6 +92,7 @@ export type LinksCountAggregateOutputType = {
   expiresAt: number
   createdAt: number
   updatedAt: number
+  redirectType: number
   clickCount: number
   passwordHash: number
   clickLimit: number
@@ -122,6 +125,7 @@ export type LinksMinAggregateInputType = {
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
+  redirectType?: true
   clickCount?: true
   passwordHash?: true
   clickLimit?: true
@@ -142,6 +146,7 @@ export type LinksMaxAggregateInputType = {
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
+  redirectType?: true
   clickCount?: true
   passwordHash?: true
   clickLimit?: true
@@ -162,6 +167,7 @@ export type LinksCountAggregateInputType = {
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
+  redirectType?: true
   clickCount?: true
   passwordHash?: true
   clickLimit?: true
@@ -269,10 +275,11 @@ export type LinksGroupByOutputType = {
   expiresAt: Date | null
   createdAt: Date
   updatedAt: Date
+  redirectType: $Enums.RedirectType
   clickCount: number
   passwordHash: string | null
   clickLimit: number
-  userId: string
+  userId: string | null
   _count: LinksCountAggregateOutputType | null
   _avg: LinksAvgAggregateOutputType | null
   _sum: LinksSumAggregateOutputType | null
@@ -312,12 +319,15 @@ export type LinksWhereInput = {
   expiresAt?: Prisma.DateTimeNullableFilter<"Links"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Links"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Links"> | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFilter<"Links"> | $Enums.RedirectType
   clickCount?: Prisma.IntFilter<"Links"> | number
   passwordHash?: Prisma.StringNullableFilter<"Links"> | string | null
   clickLimit?: Prisma.IntFilter<"Links"> | number
-  userId?: Prisma.UuidFilter<"Links"> | string
-  user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
+  userId?: Prisma.UuidNullableFilter<"Links"> | string | null
+  user?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.UsersWhereInput> | null
   clicks?: Prisma.LinkClicksListRelationFilter
+  redirectRules?: Prisma.RedirectRuleListRelationFilter
+  abTests?: Prisma.ABTestListRelationFilter
 }
 
 export type LinksOrderByWithRelationInput = {
@@ -334,12 +344,15 @@ export type LinksOrderByWithRelationInput = {
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  redirectType?: Prisma.SortOrder
   clickCount?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   clickLimit?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UsersOrderByWithRelationInput
   clicks?: Prisma.LinkClicksOrderByRelationAggregateInput
+  redirectRules?: Prisma.RedirectRuleOrderByRelationAggregateInput
+  abTests?: Prisma.ABTestOrderByRelationAggregateInput
   _relevance?: Prisma.LinksOrderByRelevanceInput
 }
 
@@ -360,12 +373,15 @@ export type LinksWhereUniqueInput = Prisma.AtLeast<{
   expiresAt?: Prisma.DateTimeNullableFilter<"Links"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Links"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Links"> | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFilter<"Links"> | $Enums.RedirectType
   clickCount?: Prisma.IntFilter<"Links"> | number
   passwordHash?: Prisma.StringNullableFilter<"Links"> | string | null
   clickLimit?: Prisma.IntFilter<"Links"> | number
-  userId?: Prisma.UuidFilter<"Links"> | string
-  user?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
+  userId?: Prisma.UuidNullableFilter<"Links"> | string | null
+  user?: Prisma.XOR<Prisma.UsersNullableScalarRelationFilter, Prisma.UsersWhereInput> | null
   clicks?: Prisma.LinkClicksListRelationFilter
+  redirectRules?: Prisma.RedirectRuleListRelationFilter
+  abTests?: Prisma.ABTestListRelationFilter
 }, "id" | "shortCode" | "customAlias">
 
 export type LinksOrderByWithAggregationInput = {
@@ -382,10 +398,11 @@ export type LinksOrderByWithAggregationInput = {
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  redirectType?: Prisma.SortOrder
   clickCount?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   clickLimit?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.LinksCountOrderByAggregateInput
   _avg?: Prisma.LinksAvgOrderByAggregateInput
   _max?: Prisma.LinksMaxOrderByAggregateInput
@@ -410,10 +427,11 @@ export type LinksScalarWhereWithAggregatesInput = {
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Links"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Links"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Links"> | Date | string
+  redirectType?: Prisma.EnumRedirectTypeWithAggregatesFilter<"Links"> | $Enums.RedirectType
   clickCount?: Prisma.IntWithAggregatesFilter<"Links"> | number
   passwordHash?: Prisma.StringNullableWithAggregatesFilter<"Links"> | string | null
   clickLimit?: Prisma.IntWithAggregatesFilter<"Links"> | number
-  userId?: Prisma.UuidWithAggregatesFilter<"Links"> | string
+  userId?: Prisma.UuidNullableWithAggregatesFilter<"Links"> | string | null
 }
 
 export type LinksCreateInput = {
@@ -430,11 +448,14 @@ export type LinksCreateInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
-  user: Prisma.UsersCreateNestedOneWithoutLinksInput
+  user?: Prisma.UsersCreateNestedOneWithoutLinksInput
   clicks?: Prisma.LinkClicksCreateNestedManyWithoutLinkInput
+  redirectRules?: Prisma.RedirectRuleCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestCreateNestedManyWithoutLinkInput
 }
 
 export type LinksUncheckedCreateInput = {
@@ -451,11 +472,14 @@ export type LinksUncheckedCreateInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
-  userId: string
+  userId?: string | null
   clicks?: Prisma.LinkClicksUncheckedCreateNestedManyWithoutLinkInput
+  redirectRules?: Prisma.RedirectRuleUncheckedCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestUncheckedCreateNestedManyWithoutLinkInput
 }
 
 export type LinksUpdateInput = {
@@ -472,11 +496,14 @@ export type LinksUpdateInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
-  user?: Prisma.UsersUpdateOneRequiredWithoutLinksNestedInput
+  user?: Prisma.UsersUpdateOneWithoutLinksNestedInput
   clicks?: Prisma.LinkClicksUpdateManyWithoutLinkNestedInput
+  redirectRules?: Prisma.RedirectRuleUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUpdateManyWithoutLinkNestedInput
 }
 
 export type LinksUncheckedUpdateInput = {
@@ -493,11 +520,14 @@ export type LinksUncheckedUpdateInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clicks?: Prisma.LinkClicksUncheckedUpdateManyWithoutLinkNestedInput
+  redirectRules?: Prisma.RedirectRuleUncheckedUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUncheckedUpdateManyWithoutLinkNestedInput
 }
 
 export type LinksCreateManyInput = {
@@ -514,10 +544,11 @@ export type LinksCreateManyInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
-  userId: string
+  userId?: string | null
 }
 
 export type LinksUpdateManyMutationInput = {
@@ -534,6 +565,7 @@ export type LinksUpdateManyMutationInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
@@ -553,10 +585,11 @@ export type LinksUncheckedUpdateManyInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type LinksListRelationFilter = {
@@ -589,6 +622,7 @@ export type LinksCountOrderByAggregateInput = {
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  redirectType?: Prisma.SortOrder
   clickCount?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   clickLimit?: Prisma.SortOrder
@@ -614,6 +648,7 @@ export type LinksMaxOrderByAggregateInput = {
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  redirectType?: Prisma.SortOrder
   clickCount?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   clickLimit?: Prisma.SortOrder
@@ -634,6 +669,7 @@ export type LinksMinOrderByAggregateInput = {
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  redirectType?: Prisma.SortOrder
   clickCount?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   clickLimit?: Prisma.SortOrder
@@ -692,6 +728,10 @@ export type LinksUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.LinksScalarWhereInput | Prisma.LinksScalarWhereInput[]
 }
 
+export type EnumRedirectTypeFieldUpdateOperationsInput = {
+  set?: $Enums.RedirectType
+}
+
 export type LinksCreateNestedOneWithoutClicksInput = {
   create?: Prisma.XOR<Prisma.LinksCreateWithoutClicksInput, Prisma.LinksUncheckedCreateWithoutClicksInput>
   connectOrCreate?: Prisma.LinksCreateOrConnectWithoutClicksInput
@@ -704,6 +744,34 @@ export type LinksUpdateOneRequiredWithoutClicksNestedInput = {
   upsert?: Prisma.LinksUpsertWithoutClicksInput
   connect?: Prisma.LinksWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.LinksUpdateToOneWithWhereWithoutClicksInput, Prisma.LinksUpdateWithoutClicksInput>, Prisma.LinksUncheckedUpdateWithoutClicksInput>
+}
+
+export type LinksCreateNestedOneWithoutRedirectRulesInput = {
+  create?: Prisma.XOR<Prisma.LinksCreateWithoutRedirectRulesInput, Prisma.LinksUncheckedCreateWithoutRedirectRulesInput>
+  connectOrCreate?: Prisma.LinksCreateOrConnectWithoutRedirectRulesInput
+  connect?: Prisma.LinksWhereUniqueInput
+}
+
+export type LinksUpdateOneRequiredWithoutRedirectRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.LinksCreateWithoutRedirectRulesInput, Prisma.LinksUncheckedCreateWithoutRedirectRulesInput>
+  connectOrCreate?: Prisma.LinksCreateOrConnectWithoutRedirectRulesInput
+  upsert?: Prisma.LinksUpsertWithoutRedirectRulesInput
+  connect?: Prisma.LinksWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LinksUpdateToOneWithWhereWithoutRedirectRulesInput, Prisma.LinksUpdateWithoutRedirectRulesInput>, Prisma.LinksUncheckedUpdateWithoutRedirectRulesInput>
+}
+
+export type LinksCreateNestedOneWithoutAbTestsInput = {
+  create?: Prisma.XOR<Prisma.LinksCreateWithoutAbTestsInput, Prisma.LinksUncheckedCreateWithoutAbTestsInput>
+  connectOrCreate?: Prisma.LinksCreateOrConnectWithoutAbTestsInput
+  connect?: Prisma.LinksWhereUniqueInput
+}
+
+export type LinksUpdateOneRequiredWithoutAbTestsNestedInput = {
+  create?: Prisma.XOR<Prisma.LinksCreateWithoutAbTestsInput, Prisma.LinksUncheckedCreateWithoutAbTestsInput>
+  connectOrCreate?: Prisma.LinksCreateOrConnectWithoutAbTestsInput
+  upsert?: Prisma.LinksUpsertWithoutAbTestsInput
+  connect?: Prisma.LinksWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LinksUpdateToOneWithWhereWithoutAbTestsInput, Prisma.LinksUpdateWithoutAbTestsInput>, Prisma.LinksUncheckedUpdateWithoutAbTestsInput>
 }
 
 export type LinksCreateWithoutUserInput = {
@@ -720,10 +788,13 @@ export type LinksCreateWithoutUserInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
   clicks?: Prisma.LinkClicksCreateNestedManyWithoutLinkInput
+  redirectRules?: Prisma.RedirectRuleCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestCreateNestedManyWithoutLinkInput
 }
 
 export type LinksUncheckedCreateWithoutUserInput = {
@@ -740,10 +811,13 @@ export type LinksUncheckedCreateWithoutUserInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
   clicks?: Prisma.LinkClicksUncheckedCreateNestedManyWithoutLinkInput
+  redirectRules?: Prisma.RedirectRuleUncheckedCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestUncheckedCreateNestedManyWithoutLinkInput
 }
 
 export type LinksCreateOrConnectWithoutUserInput = {
@@ -789,10 +863,11 @@ export type LinksScalarWhereInput = {
   expiresAt?: Prisma.DateTimeNullableFilter<"Links"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Links"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Links"> | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFilter<"Links"> | $Enums.RedirectType
   clickCount?: Prisma.IntFilter<"Links"> | number
   passwordHash?: Prisma.StringNullableFilter<"Links"> | string | null
   clickLimit?: Prisma.IntFilter<"Links"> | number
-  userId?: Prisma.UuidFilter<"Links"> | string
+  userId?: Prisma.UuidNullableFilter<"Links"> | string | null
 }
 
 export type LinksCreateWithoutClicksInput = {
@@ -809,10 +884,13 @@ export type LinksCreateWithoutClicksInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
-  user: Prisma.UsersCreateNestedOneWithoutLinksInput
+  user?: Prisma.UsersCreateNestedOneWithoutLinksInput
+  redirectRules?: Prisma.RedirectRuleCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestCreateNestedManyWithoutLinkInput
 }
 
 export type LinksUncheckedCreateWithoutClicksInput = {
@@ -829,10 +907,13 @@ export type LinksUncheckedCreateWithoutClicksInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
-  userId: string
+  userId?: string | null
+  redirectRules?: Prisma.RedirectRuleUncheckedCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestUncheckedCreateNestedManyWithoutLinkInput
 }
 
 export type LinksCreateOrConnectWithoutClicksInput = {
@@ -865,10 +946,13 @@ export type LinksUpdateWithoutClicksInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
-  user?: Prisma.UsersUpdateOneRequiredWithoutLinksNestedInput
+  user?: Prisma.UsersUpdateOneWithoutLinksNestedInput
+  redirectRules?: Prisma.RedirectRuleUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUpdateManyWithoutLinkNestedInput
 }
 
 export type LinksUncheckedUpdateWithoutClicksInput = {
@@ -885,10 +969,229 @@ export type LinksUncheckedUpdateWithoutClicksInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  redirectRules?: Prisma.RedirectRuleUncheckedUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUncheckedUpdateManyWithoutLinkNestedInput
+}
+
+export type LinksCreateWithoutRedirectRulesInput = {
+  id?: string
+  shortCode: string
+  customAlias?: string | null
+  longUrl: string
+  normalizedUrl: string
+  isOneTime?: boolean
+  title?: string | null
+  description?: string | null
+  faviconUrl?: string | null
+  isActive?: boolean
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
+  clickCount?: number
+  passwordHash?: string | null
+  clickLimit?: number
+  user?: Prisma.UsersCreateNestedOneWithoutLinksInput
+  clicks?: Prisma.LinkClicksCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestCreateNestedManyWithoutLinkInput
+}
+
+export type LinksUncheckedCreateWithoutRedirectRulesInput = {
+  id?: string
+  shortCode: string
+  customAlias?: string | null
+  longUrl: string
+  normalizedUrl: string
+  isOneTime?: boolean
+  title?: string | null
+  description?: string | null
+  faviconUrl?: string | null
+  isActive?: boolean
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
+  clickCount?: number
+  passwordHash?: string | null
+  clickLimit?: number
+  userId?: string | null
+  clicks?: Prisma.LinkClicksUncheckedCreateNestedManyWithoutLinkInput
+  abTests?: Prisma.ABTestUncheckedCreateNestedManyWithoutLinkInput
+}
+
+export type LinksCreateOrConnectWithoutRedirectRulesInput = {
+  where: Prisma.LinksWhereUniqueInput
+  create: Prisma.XOR<Prisma.LinksCreateWithoutRedirectRulesInput, Prisma.LinksUncheckedCreateWithoutRedirectRulesInput>
+}
+
+export type LinksUpsertWithoutRedirectRulesInput = {
+  update: Prisma.XOR<Prisma.LinksUpdateWithoutRedirectRulesInput, Prisma.LinksUncheckedUpdateWithoutRedirectRulesInput>
+  create: Prisma.XOR<Prisma.LinksCreateWithoutRedirectRulesInput, Prisma.LinksUncheckedCreateWithoutRedirectRulesInput>
+  where?: Prisma.LinksWhereInput
+}
+
+export type LinksUpdateToOneWithWhereWithoutRedirectRulesInput = {
+  where?: Prisma.LinksWhereInput
+  data: Prisma.XOR<Prisma.LinksUpdateWithoutRedirectRulesInput, Prisma.LinksUncheckedUpdateWithoutRedirectRulesInput>
+}
+
+export type LinksUpdateWithoutRedirectRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  isOneTime?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
+  clickCount?: Prisma.IntFieldUpdateOperationsInput | number
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UsersUpdateOneWithoutLinksNestedInput
+  clicks?: Prisma.LinkClicksUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUpdateManyWithoutLinkNestedInput
+}
+
+export type LinksUncheckedUpdateWithoutRedirectRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  isOneTime?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
+  clickCount?: Prisma.IntFieldUpdateOperationsInput | number
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clicks?: Prisma.LinkClicksUncheckedUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUncheckedUpdateManyWithoutLinkNestedInput
+}
+
+export type LinksCreateWithoutAbTestsInput = {
+  id?: string
+  shortCode: string
+  customAlias?: string | null
+  longUrl: string
+  normalizedUrl: string
+  isOneTime?: boolean
+  title?: string | null
+  description?: string | null
+  faviconUrl?: string | null
+  isActive?: boolean
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
+  clickCount?: number
+  passwordHash?: string | null
+  clickLimit?: number
+  user?: Prisma.UsersCreateNestedOneWithoutLinksInput
+  clicks?: Prisma.LinkClicksCreateNestedManyWithoutLinkInput
+  redirectRules?: Prisma.RedirectRuleCreateNestedManyWithoutLinkInput
+}
+
+export type LinksUncheckedCreateWithoutAbTestsInput = {
+  id?: string
+  shortCode: string
+  customAlias?: string | null
+  longUrl: string
+  normalizedUrl: string
+  isOneTime?: boolean
+  title?: string | null
+  description?: string | null
+  faviconUrl?: string | null
+  isActive?: boolean
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
+  clickCount?: number
+  passwordHash?: string | null
+  clickLimit?: number
+  userId?: string | null
+  clicks?: Prisma.LinkClicksUncheckedCreateNestedManyWithoutLinkInput
+  redirectRules?: Prisma.RedirectRuleUncheckedCreateNestedManyWithoutLinkInput
+}
+
+export type LinksCreateOrConnectWithoutAbTestsInput = {
+  where: Prisma.LinksWhereUniqueInput
+  create: Prisma.XOR<Prisma.LinksCreateWithoutAbTestsInput, Prisma.LinksUncheckedCreateWithoutAbTestsInput>
+}
+
+export type LinksUpsertWithoutAbTestsInput = {
+  update: Prisma.XOR<Prisma.LinksUpdateWithoutAbTestsInput, Prisma.LinksUncheckedUpdateWithoutAbTestsInput>
+  create: Prisma.XOR<Prisma.LinksCreateWithoutAbTestsInput, Prisma.LinksUncheckedCreateWithoutAbTestsInput>
+  where?: Prisma.LinksWhereInput
+}
+
+export type LinksUpdateToOneWithWhereWithoutAbTestsInput = {
+  where?: Prisma.LinksWhereInput
+  data: Prisma.XOR<Prisma.LinksUpdateWithoutAbTestsInput, Prisma.LinksUncheckedUpdateWithoutAbTestsInput>
+}
+
+export type LinksUpdateWithoutAbTestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  isOneTime?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
+  clickCount?: Prisma.IntFieldUpdateOperationsInput | number
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  user?: Prisma.UsersUpdateOneWithoutLinksNestedInput
+  clicks?: Prisma.LinkClicksUpdateManyWithoutLinkNestedInput
+  redirectRules?: Prisma.RedirectRuleUpdateManyWithoutLinkNestedInput
+}
+
+export type LinksUncheckedUpdateWithoutAbTestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  shortCode?: Prisma.StringFieldUpdateOperationsInput | string
+  customAlias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  isOneTime?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
+  clickCount?: Prisma.IntFieldUpdateOperationsInput | number
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clicks?: Prisma.LinkClicksUncheckedUpdateManyWithoutLinkNestedInput
+  redirectRules?: Prisma.RedirectRuleUncheckedUpdateManyWithoutLinkNestedInput
 }
 
 export type LinksCreateManyUserInput = {
@@ -905,6 +1208,7 @@ export type LinksCreateManyUserInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  redirectType?: $Enums.RedirectType
   clickCount?: number
   passwordHash?: string | null
   clickLimit?: number
@@ -924,10 +1228,13 @@ export type LinksUpdateWithoutUserInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.LinkClicksUpdateManyWithoutLinkNestedInput
+  redirectRules?: Prisma.RedirectRuleUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUpdateManyWithoutLinkNestedInput
 }
 
 export type LinksUncheckedUpdateWithoutUserInput = {
@@ -944,10 +1251,13 @@ export type LinksUncheckedUpdateWithoutUserInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
   clicks?: Prisma.LinkClicksUncheckedUpdateManyWithoutLinkNestedInput
+  redirectRules?: Prisma.RedirectRuleUncheckedUpdateManyWithoutLinkNestedInput
+  abTests?: Prisma.ABTestUncheckedUpdateManyWithoutLinkNestedInput
 }
 
 export type LinksUncheckedUpdateManyWithoutUserInput = {
@@ -964,6 +1274,7 @@ export type LinksUncheckedUpdateManyWithoutUserInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  redirectType?: Prisma.EnumRedirectTypeFieldUpdateOperationsInput | $Enums.RedirectType
   clickCount?: Prisma.IntFieldUpdateOperationsInput | number
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   clickLimit?: Prisma.IntFieldUpdateOperationsInput | number
@@ -976,10 +1287,14 @@ export type LinksUncheckedUpdateManyWithoutUserInput = {
 
 export type LinksCountOutputType = {
   clicks: number
+  redirectRules: number
+  abTests: number
 }
 
 export type LinksCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   clicks?: boolean | LinksCountOutputTypeCountClicksArgs
+  redirectRules?: boolean | LinksCountOutputTypeCountRedirectRulesArgs
+  abTests?: boolean | LinksCountOutputTypeCountAbTestsArgs
 }
 
 /**
@@ -999,6 +1314,20 @@ export type LinksCountOutputTypeCountClicksArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.LinkClicksWhereInput
 }
 
+/**
+ * LinksCountOutputType without action
+ */
+export type LinksCountOutputTypeCountRedirectRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RedirectRuleWhereInput
+}
+
+/**
+ * LinksCountOutputType without action
+ */
+export type LinksCountOutputTypeCountAbTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ABTestWhereInput
+}
+
 
 export type LinksSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1014,12 +1343,15 @@ export type LinksSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  redirectType?: boolean
   clickCount?: boolean
   passwordHash?: boolean
   clickLimit?: boolean
   userId?: boolean
-  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Links$userArgs<ExtArgs>
   clicks?: boolean | Prisma.Links$clicksArgs<ExtArgs>
+  redirectRules?: boolean | Prisma.Links$redirectRulesArgs<ExtArgs>
+  abTests?: boolean | Prisma.Links$abTestsArgs<ExtArgs>
   _count?: boolean | Prisma.LinksCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["links"]>
 
@@ -1037,11 +1369,12 @@ export type LinksSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  redirectType?: boolean
   clickCount?: boolean
   passwordHash?: boolean
   clickLimit?: boolean
   userId?: boolean
-  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Links$userArgs<ExtArgs>
 }, ExtArgs["result"]["links"]>
 
 export type LinksSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1058,11 +1391,12 @@ export type LinksSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  redirectType?: boolean
   clickCount?: boolean
   passwordHash?: boolean
   clickLimit?: boolean
   userId?: boolean
-  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Links$userArgs<ExtArgs>
 }, ExtArgs["result"]["links"]>
 
 export type LinksSelectScalar = {
@@ -1079,30 +1413,35 @@ export type LinksSelectScalar = {
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  redirectType?: boolean
   clickCount?: boolean
   passwordHash?: boolean
   clickLimit?: boolean
   userId?: boolean
 }
 
-export type LinksOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "shortCode" | "customAlias" | "longUrl" | "normalizedUrl" | "isOneTime" | "title" | "description" | "faviconUrl" | "isActive" | "expiresAt" | "createdAt" | "updatedAt" | "clickCount" | "passwordHash" | "clickLimit" | "userId", ExtArgs["result"]["links"]>
+export type LinksOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "shortCode" | "customAlias" | "longUrl" | "normalizedUrl" | "isOneTime" | "title" | "description" | "faviconUrl" | "isActive" | "expiresAt" | "createdAt" | "updatedAt" | "redirectType" | "clickCount" | "passwordHash" | "clickLimit" | "userId", ExtArgs["result"]["links"]>
 export type LinksInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Links$userArgs<ExtArgs>
   clicks?: boolean | Prisma.Links$clicksArgs<ExtArgs>
+  redirectRules?: boolean | Prisma.Links$redirectRulesArgs<ExtArgs>
+  abTests?: boolean | Prisma.Links$abTestsArgs<ExtArgs>
   _count?: boolean | Prisma.LinksCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LinksIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Links$userArgs<ExtArgs>
 }
 export type LinksIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Links$userArgs<ExtArgs>
 }
 
 export type $LinksPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Links"
   objects: {
-    user: Prisma.$UsersPayload<ExtArgs>
+    user: Prisma.$UsersPayload<ExtArgs> | null
     clicks: Prisma.$LinkClicksPayload<ExtArgs>[]
+    redirectRules: Prisma.$RedirectRulePayload<ExtArgs>[]
+    abTests: Prisma.$ABTestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1118,10 +1457,11 @@ export type $LinksPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     expiresAt: Date | null
     createdAt: Date
     updatedAt: Date
+    redirectType: $Enums.RedirectType
     clickCount: number
     passwordHash: string | null
     clickLimit: number
-    userId: string
+    userId: string | null
   }, ExtArgs["result"]["links"]>
   composites: {}
 }
@@ -1516,8 +1856,10 @@ readonly fields: LinksFieldRefs;
  */
 export interface Prisma__LinksClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.Links$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Links$userArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   clicks<T extends Prisma.Links$clicksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Links$clicksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LinkClicksPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  redirectRules<T extends Prisma.Links$redirectRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Links$redirectRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RedirectRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  abTests<T extends Prisma.Links$abTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Links$abTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ABTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1560,6 +1902,7 @@ export interface LinksFieldRefs {
   readonly expiresAt: Prisma.FieldRef<"Links", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Links", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Links", 'DateTime'>
+  readonly redirectType: Prisma.FieldRef<"Links", 'RedirectType'>
   readonly clickCount: Prisma.FieldRef<"Links", 'Int'>
   readonly passwordHash: Prisma.FieldRef<"Links", 'String'>
   readonly clickLimit: Prisma.FieldRef<"Links", 'Int'>
@@ -1974,6 +2317,25 @@ export type LinksDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Links.user
+ */
+export type Links$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Users
+   */
+  select?: Prisma.UsersSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Users
+   */
+  omit?: Prisma.UsersOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UsersInclude<ExtArgs> | null
+  where?: Prisma.UsersWhereInput
+}
+
+/**
  * Links.clicks
  */
 export type Links$clicksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1995,6 +2357,54 @@ export type Links$clicksArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.LinkClicksScalarFieldEnum | Prisma.LinkClicksScalarFieldEnum[]
+}
+
+/**
+ * Links.redirectRules
+ */
+export type Links$redirectRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RedirectRule
+   */
+  select?: Prisma.RedirectRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RedirectRule
+   */
+  omit?: Prisma.RedirectRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RedirectRuleInclude<ExtArgs> | null
+  where?: Prisma.RedirectRuleWhereInput
+  orderBy?: Prisma.RedirectRuleOrderByWithRelationInput | Prisma.RedirectRuleOrderByWithRelationInput[]
+  cursor?: Prisma.RedirectRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RedirectRuleScalarFieldEnum | Prisma.RedirectRuleScalarFieldEnum[]
+}
+
+/**
+ * Links.abTests
+ */
+export type Links$abTestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ABTest
+   */
+  select?: Prisma.ABTestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ABTest
+   */
+  omit?: Prisma.ABTestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ABTestInclude<ExtArgs> | null
+  where?: Prisma.ABTestWhereInput
+  orderBy?: Prisma.ABTestOrderByWithRelationInput | Prisma.ABTestOrderByWithRelationInput[]
+  cursor?: Prisma.ABTestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ABTestScalarFieldEnum | Prisma.ABTestScalarFieldEnum[]
 }
 
 /**

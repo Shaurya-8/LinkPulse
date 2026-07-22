@@ -7,11 +7,13 @@ type RequestPart = "body" | "params" | "query";
 export function validate<T extends z.ZodType>(schema: T, part: RequestPart) {
     return function (req: Request, _res: Response, next: NextFunction) {
         const result = schema.safeParse(req[part]);
+        console.log("from validate: ", req.params);
         if (!result.success) {
             const formatted = formatZodError(result.error);
             return next(new ValidationAppError(formatted));
         }
-        req[part] = result.data;
+        req.validated ??= {};
+        req.validated[part] = result.data;
         next()
     }
 }

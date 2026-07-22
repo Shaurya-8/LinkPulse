@@ -63,6 +63,21 @@ export type Links = Prisma.LinksModel
  */
 export type LinkClicks = Prisma.LinkClicksModel
 /**
+ * Model RedirectRule
+ * 
+ */
+export type RedirectRule = Prisma.RedirectRuleModel
+/**
+ * Model ABTest
+ * 
+ */
+export type ABTest = Prisma.ABTestModel
+/**
+ * Model ABTestVariant
+ * 
+ */
+export type ABTestVariant = Prisma.ABTestVariantModel
+/**
  * Model Plans
  * 
  */
@@ -78,12 +93,12 @@ export type PlanPrices = Prisma.PlanPricesModel
  */
 export type Subscriptions = Prisma.SubscriptionsModel
 /**
- * Model FeatureLimits
+ * Model Features
  * 
  */
-export type FeatureLimits = Prisma.FeatureLimitsModel
+export type Features = Prisma.FeaturesModel
 /**
- * Model FeatureLimitUsages
+ * Model FeatureUsages
  * 
  */
-export type FeatureLimitUsages = Prisma.FeatureLimitUsagesModel
+export type FeatureUsages = Prisma.FeatureUsagesModel

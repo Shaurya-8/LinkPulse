@@ -8,8 +8,19 @@ export const authUserSelect = {
   email: true,
   status: true,
   emailVerified: true,
+  role: true,
+  subscriptions: {
+    select: {
+      expiresAt: true,
+      status: true,
+      plan: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  },
 } satisfies Prisma.UsersSelect;
-
 export type AuthUser = Prisma.UsersGetPayload<{
   select: typeof authUserSelect;
 }>;
@@ -74,6 +85,24 @@ export class UserRepository {
         passwordHash: true,
       },
     }, tx);
+  }
+
+  getUser(email: string, tx: DbClient = this.db) {
+    return this.findUnique({
+      where: { email },
+      select: {
+        subscriptions: {
+          select: {
+            expiresAt: true,
+            plan: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        }
+      }
+    })
   }
 
   verifyEmail(email: string, tx?: DbClient) {

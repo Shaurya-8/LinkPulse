@@ -1,10 +1,10 @@
-import { DbClient } from "../../../config/prisma";
-import { FeatureId } from "../../../types";
-import { LinkFeatureResolver } from "../features/link-feature.resolver";
-import { CreateLinkDto } from "../links.schema";
-import { FeatureRequest } from "../links.type";
-import { FeatureState } from "../../subscription/types";
-import { FeatureKey } from "../../../../generated/prisma/enums";
+import { DbClient } from "../../config/prisma";
+import { FeatureId } from "../../types";
+import { LinkFeatureResolver } from "../links/features/link-feature.resolver";
+import { CreateLinkInput } from "../links/links.schema";
+import { FeatureRequest } from "../links/links.type";
+import { FeatureState } from "../subscription/types";
+import { FeatureKey } from "../../../generated/prisma/enums";
 
 
 export class CreateLinkAuthorization {
@@ -14,7 +14,7 @@ export class CreateLinkAuthorization {
     ) { }
 
 
-    authorize(dto: CreateLinkDto): { featureKey: FeatureKey, currentUsed: number }[] {
+    authorize(dto: CreateLinkInput): { featureKey: FeatureKey, currentUsed: number }[] {
         const mappedFeature = LinkFeatureResolver.resolve(dto);
         return this.consume(mappedFeature, this.featureState);
     }
@@ -29,7 +29,10 @@ export class CreateLinkAuthorization {
             currentUsed: number;
         }> = [];
 
+        console.log("featureState:", this.featureState);
+        console.log("requests:", requests);
         for (const request of requests) {
+
 
             const state = featureState[request.featurekey];
 

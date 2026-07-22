@@ -1,11 +1,11 @@
-import { Prisma } from "../../../../generated/prisma/client";
-import { FeatureId, UserId } from "../../../types";
-import { CreateLinkDto } from "../links.schema";
+import { Prisma } from "../../../generated/prisma/client";
+import { FeatureId, UserId } from "../../types";
+import { CreateLinkInput } from "../links/links.schema";
 
 // ───────────────────────────────────────────────────────────────
 // Authorization 
 // ───────────────────────────────────────────────────────────────
-export interface AuthorizationCreateLinkDto extends CreateLinkDto {
+export interface AuthorizationCreateLinkInput extends CreateLinkInput {
     userId: UserId
 }
 

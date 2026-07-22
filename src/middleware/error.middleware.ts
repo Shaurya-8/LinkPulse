@@ -340,7 +340,7 @@ export function notFoundHandler(req: Request, res: Response): void {
         meta: {
             code: 'ROUTE_NOT_FOUND',
             requestId,
-            available: [
+            available: config.app.env === 'development' ? [
                 'POST /api/v1/auth/register',
                 'POST /api/v1/auth/verify-otp',
                 'POST /api/v1/auth/resend-otp',
@@ -354,7 +354,7 @@ export function notFoundHandler(req: Request, res: Response): void {
                 'DELETE /api/v1/auth/sessions/:sessionId',
                 'GET  /health',
                 'GET  /health/ready',
-            ],
+            ] : null,
         },
     };
 

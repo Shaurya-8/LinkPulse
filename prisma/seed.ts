@@ -107,7 +107,7 @@ async function main() {
             }))
     );
 
-    await prisma.featureLimits.createMany({
+    await prisma.features.createMany({
         data: featureLimits,
         skipDuplicates: true,
     });

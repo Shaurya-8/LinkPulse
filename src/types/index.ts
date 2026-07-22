@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { UserStatus } from "../../generated/prisma/enums";
+import { UserStatus, UserRole } from "../../generated/prisma/enums";
 // ──────────────────────────────────────────────────────────────────────────
 //  PRIMITIVE ALIASES
 //  Branded types make IDs and tokens nominally typed so they can't be
@@ -26,6 +26,7 @@ export type FeatureId = Brand<string, "FeatureId">;
 
 
 export const asUserId = (id: string): UserId => id as UserId;
+
 
 // ═════════════════════════════════════════════════════════════════════════════
 // UTILITY TYPES
@@ -229,6 +230,7 @@ export interface JwtAccessPayload {
   iat?: number;
   /** Expires at (Unix timestamp, seconds) — added by jsonwebtoken */
   exp?: number;
+  role: UserRole;
 }
 
 /**
@@ -240,6 +242,7 @@ export interface JwtRefreshPayload {
   sub: UserId;
   email: string;
   sessionId: SessionId;
+  role: UserRole
   iat?: number;
   exp?: number;
 }
@@ -262,15 +265,31 @@ export interface TokenPair {
  * Augmented express Request for routes protected by the authenticate middleware.
  * After authenticate runs, `user` is guaranteed to be populated.
  */
-export interface AuthenticatedRequest {
-  /** Populated by authenticate middleware — undefined on public routes */
-  user: {
-    id: UserId;
-    email: string;
-    refreshToken: RefreshToken;
-    sessionId: SessionId;
-  };
+// export interface AuthenticatedRequest {
+//   /** Populated by authenticate middleware — undefined on public routes */
+//   user: {
+//     id: UserId;
+//     email: string;
+//     refreshToken: RefreshToken;
+//     sessionId: SessionId;
+//   };
+// }
+
+export interface AuthenticatedUser {
+  sub: UserId;
+  email: string;
+  refreshToken: RefreshToken;
+  sessionId: SessionId;
+  role: UserRole;
 }
+
+export interface AuthenticatedRequest extends Request {
+  user: AuthenticatedUser;
+  apiKey?: string;
+  isApiKeyAuth?: boolean;
+}
+
+// ────────────────────────────────────────
 
 export interface CreateRequestContext extends Request {
   requestedFeatures: String[] | null;
@@ -646,4 +665,85 @@ export interface PaginationQuery {
 export interface PaginatedResult<T> {
   items: T[];
   pagination: PaginationMeta;
+}
+
+// ────────────────────────────────────────────
+// Job Queue
+// ────────────────────────────────────────────
+export interface AnalyticsJobData {
+  linkId: string;
+  shortCode: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  referer: string | null;
+  rawHeaders: string;
+  clickedAt: string;
+  abTestId?: string;
+  variantId?: string;
+}
+
+export interface EmailJobData {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+}
+
+export interface BulkLinkJobData {
+  jobId: string;
+  userId: string;
+  links: Array<{
+    originalUrl: string;
+    customAlias?: string;
+    title?: string;
+    expiresAt?: string;
+    tags?: string[];
+  }>;
+}
+
+
+
+// ─────────────────────────────────────────────
+// Geo IP
+// ─────────────────────────────────────────────
+
+export interface GeoInfo {
+  country?: string;
+  countryCode?: string;
+  region?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+  timezone?: string;
+}
+
+// ─────────────────────────────────────────────
+// User Agent
+// ─────────────────────────────────────────────
+
+export interface ParsedUserAgent {
+  browser: string | null;
+  browserVersion: string | null;
+  os: string | null;
+  osVersion: string | null;
+  device: 'mobile' | 'desktop' | 'tablet' | 'bot' | null;
+}
+
+// ─────────────────────────────────────────────
+// Redirect Rules
+// ─────────────────────────────────────────────
+
+export interface RedirectCondition {
+  type: 'DEVICE' | 'GEO' | 'LANGUAGE' | 'TIME_OF_DAY' | 'DAY_OF_WEEK' | 'DATE_RANGE';
+  values: string[];
+  operator: 'includes' | 'equals' | 'between';
+}
+
+export interface RedirectContext {
+  device: string | null;
+  country: string | null;
+  language: string | null;
+  hour: number; // 0–23 UTC
+  dayOfWeek: number; // 0=Sun
+  date: string; // YYYY-MM-DD
 }

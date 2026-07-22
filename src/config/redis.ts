@@ -161,6 +161,10 @@ export const cacheKeys = {
 
     // link
     shortLink: (code: string) => `link:code:${code}`,
+
+
+    // Dashboard
+    dashboardStats:(userId:UserId)=> `dashboard:${userId}:stats`,
 }
 
 export async function redisHealthCheck() {

@@ -1,21 +1,5 @@
-import { Request } from "express";
-import { UserId } from "../../types";
 import { FeatureKey } from "../../../generated/prisma/enums";
 
-// export interface AthorizationContext extends Request{
-//     user: UserId
-//     action: 'CREATE_LINK',
-//     resource: 'link',
-
-// }
-
-// export enum FeatureKey {
-//     LINKS_CREATED = "LINKS_CREATED",
-//     CUSTOM_ALIAS = "CUSTOM_ALIAS",
-//     PASSWORD_PROTECTED_LINKS = "PASSWORD_PROTECTED_LINKS",
-//     EXPIRING_LINKS = "EXPIRING_LINKS",
-//     ONE_TIME_LINKS = "ONE_TIME_LINKS",
-// }
 export interface FeatureRequest {
     featurekey: FeatureKey;
     amount: number;
@@ -42,3 +26,64 @@ export interface CreateLinks {
     userId: string;
 }
 
+export interface GetLinksParams {
+    page: number;
+    limit: number;
+    search?: string;
+    isActive?: boolean;
+    tag?: string;
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
+}
+
+export interface LinkWithMeta {
+  id: string;
+  shortCode: string;
+  shortUrl: string;
+  originalUrl: string;
+  title?: string | null;
+  description?: string | null;
+  status: string;
+  clickCount: number;
+  maxClicks?: number | null;
+  isPasswordProtected: boolean;
+  expiresAt?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: Array<{ id: string; name: string; color: string }>;
+  qrCode?: {
+    pngUrl?: string | null;
+    svgData?: string | null;
+  } | null;
+}
+
+
+// ─────────────────────────────────────────────
+// API Response
+// ─────────────────────────────────────────────
+
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  error?: string;
+  errors?: Record<string, string[]>;
+  meta?: PaginationMeta;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface PaginatedQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}

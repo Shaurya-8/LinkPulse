@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { LinkService } from "./links.service";
 import { BadRequestError } from "../../common/errors/AppError";
-import { DeviceInfo, JwtAccessPayload } from "../../types";
-import { extractAccessToken } from "../../common/utils/cookies";
-import { verifyToken } from "../../common/utils/jwt";
-import { config } from "../../config";
+import { AuthenticatedRequest, DeviceInfo } from "../../types";
 import { errorResponse, successResponse } from "../../common/utils/response";
+import asyncHandler from "../../common/utils/asyncHandler";
 
 function getDevice(req: Request): DeviceInfo {
     const device = req.deviceInfo;
@@ -16,55 +14,32 @@ function getDevice(req: Request): DeviceInfo {
 }
 
 const linkService = new LinkService();
-export async function create(req: Request, res: Response, next: NextFunction) {
-    const device = getDevice(req);
 
-    try {
-        const result = await linkService.create(req.body, device, req.user?.sub);
+export const linkController = {
 
-        successResponse(res,
-            result?.data,
-            'link create successfull',
-            201
-        )
-    } catch (err) {
-        next(err);
-    }
-}
-type RedirectParams = {
-    shortCode: string
-}
-export async function redirect(
-    req: Request<RedirectParams>,
-    res: Response,
-    next: NextFunction
-): Promise<void> {
-    try {
-        const { shortCode } = req.params;
+    async create(req: Request, res: Response, next: NextFunction) {
+        const device = getDevice(req);
+        const user = (req as AuthenticatedRequest).user?.sub;
+        try {
+            const result = await linkService.create(req.body, device, user);
 
-        if (!shortCode) {
-            errorResponse(res,
-                "Short code is required",
-                400
+            successResponse(res,
+                result.data,
+                'link create successfull',
+                201
             )
-            return;
+        } catch (err) {
+            next(err);
         }
+    },
 
-        // const device = getDevice(req);
+    getAll: asyncHandler(async (req: Request, res: Response) => {
+        const user = (req as AuthenticatedRequest).user;
+        const result = await linkService.getLinks(user.sub, req.validated.query as never);
+        successResponse(res,
+            result.data,
+            'link sent successfully'
+        )
+    })
 
-        const result = await linkService.redirect(
-            shortCode,
-            res
-
-        );
-
-        // Permanent redirect
-        res.redirect(301, result.longUrl);
-
-        // If you need temporary redirects instead:
-        // res.redirect(302, result.longUrl);
-    } catch (error) {
-        next(error);
-    }
 }
-

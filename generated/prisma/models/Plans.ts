@@ -175,7 +175,7 @@ export type PlansWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Plans"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plans"> | Date | string
   prices?: Prisma.PlanPricesListRelationFilter
-  featureLimits?: Prisma.FeatureLimitsListRelationFilter
+  features?: Prisma.FeaturesListRelationFilter
   subscriptions?: Prisma.SubscriptionsListRelationFilter
 }
 
@@ -185,7 +185,7 @@ export type PlansOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   prices?: Prisma.PlanPricesOrderByRelationAggregateInput
-  featureLimits?: Prisma.FeatureLimitsOrderByRelationAggregateInput
+  features?: Prisma.FeaturesOrderByRelationAggregateInput
   subscriptions?: Prisma.SubscriptionsOrderByRelationAggregateInput
   _relevance?: Prisma.PlansOrderByRelevanceInput
 }
@@ -199,7 +199,7 @@ export type PlansWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Plans"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Plans"> | Date | string
   prices?: Prisma.PlanPricesListRelationFilter
-  featureLimits?: Prisma.FeatureLimitsListRelationFilter
+  features?: Prisma.FeaturesListRelationFilter
   subscriptions?: Prisma.SubscriptionsListRelationFilter
 }, "id" | "name">
 
@@ -229,7 +229,7 @@ export type PlansCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   prices?: Prisma.PlanPricesCreateNestedManyWithoutPlanInput
-  featureLimits?: Prisma.FeatureLimitsCreateNestedManyWithoutPlanInput
+  features?: Prisma.FeaturesCreateNestedManyWithoutPlanInput
   subscriptions?: Prisma.SubscriptionsCreateNestedManyWithoutPlanInput
 }
 
@@ -239,7 +239,7 @@ export type PlansUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   prices?: Prisma.PlanPricesUncheckedCreateNestedManyWithoutPlanInput
-  featureLimits?: Prisma.FeatureLimitsUncheckedCreateNestedManyWithoutPlanInput
+  features?: Prisma.FeaturesUncheckedCreateNestedManyWithoutPlanInput
   subscriptions?: Prisma.SubscriptionsUncheckedCreateNestedManyWithoutPlanInput
 }
 
@@ -249,7 +249,7 @@ export type PlansUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   prices?: Prisma.PlanPricesUpdateManyWithoutPlanNestedInput
-  featureLimits?: Prisma.FeatureLimitsUpdateManyWithoutPlanNestedInput
+  features?: Prisma.FeaturesUpdateManyWithoutPlanNestedInput
   subscriptions?: Prisma.SubscriptionsUpdateManyWithoutPlanNestedInput
 }
 
@@ -259,7 +259,7 @@ export type PlansUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   prices?: Prisma.PlanPricesUncheckedUpdateManyWithoutPlanNestedInput
-  featureLimits?: Prisma.FeatureLimitsUncheckedUpdateManyWithoutPlanNestedInput
+  features?: Prisma.FeaturesUncheckedUpdateManyWithoutPlanNestedInput
   subscriptions?: Prisma.SubscriptionsUncheckedUpdateManyWithoutPlanNestedInput
 }
 
@@ -348,18 +348,18 @@ export type PlansUpdateOneRequiredWithoutSubscriptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PlansUpdateToOneWithWhereWithoutSubscriptionsInput, Prisma.PlansUpdateWithoutSubscriptionsInput>, Prisma.PlansUncheckedUpdateWithoutSubscriptionsInput>
 }
 
-export type PlansCreateNestedOneWithoutFeatureLimitsInput = {
-  create?: Prisma.XOR<Prisma.PlansCreateWithoutFeatureLimitsInput, Prisma.PlansUncheckedCreateWithoutFeatureLimitsInput>
-  connectOrCreate?: Prisma.PlansCreateOrConnectWithoutFeatureLimitsInput
+export type PlansCreateNestedOneWithoutFeaturesInput = {
+  create?: Prisma.XOR<Prisma.PlansCreateWithoutFeaturesInput, Prisma.PlansUncheckedCreateWithoutFeaturesInput>
+  connectOrCreate?: Prisma.PlansCreateOrConnectWithoutFeaturesInput
   connect?: Prisma.PlansWhereUniqueInput
 }
 
-export type PlansUpdateOneRequiredWithoutFeatureLimitsNestedInput = {
-  create?: Prisma.XOR<Prisma.PlansCreateWithoutFeatureLimitsInput, Prisma.PlansUncheckedCreateWithoutFeatureLimitsInput>
-  connectOrCreate?: Prisma.PlansCreateOrConnectWithoutFeatureLimitsInput
-  upsert?: Prisma.PlansUpsertWithoutFeatureLimitsInput
+export type PlansUpdateOneRequiredWithoutFeaturesNestedInput = {
+  create?: Prisma.XOR<Prisma.PlansCreateWithoutFeaturesInput, Prisma.PlansUncheckedCreateWithoutFeaturesInput>
+  connectOrCreate?: Prisma.PlansCreateOrConnectWithoutFeaturesInput
+  upsert?: Prisma.PlansUpsertWithoutFeaturesInput
   connect?: Prisma.PlansWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.PlansUpdateToOneWithWhereWithoutFeatureLimitsInput, Prisma.PlansUpdateWithoutFeatureLimitsInput>, Prisma.PlansUncheckedUpdateWithoutFeatureLimitsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PlansUpdateToOneWithWhereWithoutFeaturesInput, Prisma.PlansUpdateWithoutFeaturesInput>, Prisma.PlansUncheckedUpdateWithoutFeaturesInput>
 }
 
 export type PlansCreateWithoutPricesInput = {
@@ -367,7 +367,7 @@ export type PlansCreateWithoutPricesInput = {
   name: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
-  featureLimits?: Prisma.FeatureLimitsCreateNestedManyWithoutPlanInput
+  features?: Prisma.FeaturesCreateNestedManyWithoutPlanInput
   subscriptions?: Prisma.SubscriptionsCreateNestedManyWithoutPlanInput
 }
 
@@ -376,7 +376,7 @@ export type PlansUncheckedCreateWithoutPricesInput = {
   name: $Enums.PlanType
   createdAt?: Date | string
   updatedAt?: Date | string
-  featureLimits?: Prisma.FeatureLimitsUncheckedCreateNestedManyWithoutPlanInput
+  features?: Prisma.FeaturesUncheckedCreateNestedManyWithoutPlanInput
   subscriptions?: Prisma.SubscriptionsUncheckedCreateNestedManyWithoutPlanInput
 }
 
@@ -401,7 +401,7 @@ export type PlansUpdateWithoutPricesInput = {
   name?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  featureLimits?: Prisma.FeatureLimitsUpdateManyWithoutPlanNestedInput
+  features?: Prisma.FeaturesUpdateManyWithoutPlanNestedInput
   subscriptions?: Prisma.SubscriptionsUpdateManyWithoutPlanNestedInput
 }
 
@@ -410,7 +410,7 @@ export type PlansUncheckedUpdateWithoutPricesInput = {
   name?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  featureLimits?: Prisma.FeatureLimitsUncheckedUpdateManyWithoutPlanNestedInput
+  features?: Prisma.FeaturesUncheckedUpdateManyWithoutPlanNestedInput
   subscriptions?: Prisma.SubscriptionsUncheckedUpdateManyWithoutPlanNestedInput
 }
 
@@ -420,7 +420,7 @@ export type PlansCreateWithoutSubscriptionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   prices?: Prisma.PlanPricesCreateNestedManyWithoutPlanInput
-  featureLimits?: Prisma.FeatureLimitsCreateNestedManyWithoutPlanInput
+  features?: Prisma.FeaturesCreateNestedManyWithoutPlanInput
 }
 
 export type PlansUncheckedCreateWithoutSubscriptionsInput = {
@@ -429,7 +429,7 @@ export type PlansUncheckedCreateWithoutSubscriptionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   prices?: Prisma.PlanPricesUncheckedCreateNestedManyWithoutPlanInput
-  featureLimits?: Prisma.FeatureLimitsUncheckedCreateNestedManyWithoutPlanInput
+  features?: Prisma.FeaturesUncheckedCreateNestedManyWithoutPlanInput
 }
 
 export type PlansCreateOrConnectWithoutSubscriptionsInput = {
@@ -454,7 +454,7 @@ export type PlansUpdateWithoutSubscriptionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   prices?: Prisma.PlanPricesUpdateManyWithoutPlanNestedInput
-  featureLimits?: Prisma.FeatureLimitsUpdateManyWithoutPlanNestedInput
+  features?: Prisma.FeaturesUpdateManyWithoutPlanNestedInput
 }
 
 export type PlansUncheckedUpdateWithoutSubscriptionsInput = {
@@ -463,10 +463,10 @@ export type PlansUncheckedUpdateWithoutSubscriptionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   prices?: Prisma.PlanPricesUncheckedUpdateManyWithoutPlanNestedInput
-  featureLimits?: Prisma.FeatureLimitsUncheckedUpdateManyWithoutPlanNestedInput
+  features?: Prisma.FeaturesUncheckedUpdateManyWithoutPlanNestedInput
 }
 
-export type PlansCreateWithoutFeatureLimitsInput = {
+export type PlansCreateWithoutFeaturesInput = {
   id?: string
   name: $Enums.PlanType
   createdAt?: Date | string
@@ -475,7 +475,7 @@ export type PlansCreateWithoutFeatureLimitsInput = {
   subscriptions?: Prisma.SubscriptionsCreateNestedManyWithoutPlanInput
 }
 
-export type PlansUncheckedCreateWithoutFeatureLimitsInput = {
+export type PlansUncheckedCreateWithoutFeaturesInput = {
   id?: string
   name: $Enums.PlanType
   createdAt?: Date | string
@@ -484,23 +484,23 @@ export type PlansUncheckedCreateWithoutFeatureLimitsInput = {
   subscriptions?: Prisma.SubscriptionsUncheckedCreateNestedManyWithoutPlanInput
 }
 
-export type PlansCreateOrConnectWithoutFeatureLimitsInput = {
+export type PlansCreateOrConnectWithoutFeaturesInput = {
   where: Prisma.PlansWhereUniqueInput
-  create: Prisma.XOR<Prisma.PlansCreateWithoutFeatureLimitsInput, Prisma.PlansUncheckedCreateWithoutFeatureLimitsInput>
+  create: Prisma.XOR<Prisma.PlansCreateWithoutFeaturesInput, Prisma.PlansUncheckedCreateWithoutFeaturesInput>
 }
 
-export type PlansUpsertWithoutFeatureLimitsInput = {
-  update: Prisma.XOR<Prisma.PlansUpdateWithoutFeatureLimitsInput, Prisma.PlansUncheckedUpdateWithoutFeatureLimitsInput>
-  create: Prisma.XOR<Prisma.PlansCreateWithoutFeatureLimitsInput, Prisma.PlansUncheckedCreateWithoutFeatureLimitsInput>
+export type PlansUpsertWithoutFeaturesInput = {
+  update: Prisma.XOR<Prisma.PlansUpdateWithoutFeaturesInput, Prisma.PlansUncheckedUpdateWithoutFeaturesInput>
+  create: Prisma.XOR<Prisma.PlansCreateWithoutFeaturesInput, Prisma.PlansUncheckedCreateWithoutFeaturesInput>
   where?: Prisma.PlansWhereInput
 }
 
-export type PlansUpdateToOneWithWhereWithoutFeatureLimitsInput = {
+export type PlansUpdateToOneWithWhereWithoutFeaturesInput = {
   where?: Prisma.PlansWhereInput
-  data: Prisma.XOR<Prisma.PlansUpdateWithoutFeatureLimitsInput, Prisma.PlansUncheckedUpdateWithoutFeatureLimitsInput>
+  data: Prisma.XOR<Prisma.PlansUpdateWithoutFeaturesInput, Prisma.PlansUncheckedUpdateWithoutFeaturesInput>
 }
 
-export type PlansUpdateWithoutFeatureLimitsInput = {
+export type PlansUpdateWithoutFeaturesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -509,7 +509,7 @@ export type PlansUpdateWithoutFeatureLimitsInput = {
   subscriptions?: Prisma.SubscriptionsUpdateManyWithoutPlanNestedInput
 }
 
-export type PlansUncheckedUpdateWithoutFeatureLimitsInput = {
+export type PlansUncheckedUpdateWithoutFeaturesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.EnumPlanTypeFieldUpdateOperationsInput | $Enums.PlanType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -525,13 +525,13 @@ export type PlansUncheckedUpdateWithoutFeatureLimitsInput = {
 
 export type PlansCountOutputType = {
   prices: number
-  featureLimits: number
+  features: number
   subscriptions: number
 }
 
 export type PlansCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prices?: boolean | PlansCountOutputTypeCountPricesArgs
-  featureLimits?: boolean | PlansCountOutputTypeCountFeatureLimitsArgs
+  features?: boolean | PlansCountOutputTypeCountFeaturesArgs
   subscriptions?: boolean | PlansCountOutputTypeCountSubscriptionsArgs
 }
 
@@ -555,8 +555,8 @@ export type PlansCountOutputTypeCountPricesArgs<ExtArgs extends runtime.Types.Ex
 /**
  * PlansCountOutputType without action
  */
-export type PlansCountOutputTypeCountFeatureLimitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.FeatureLimitsWhereInput
+export type PlansCountOutputTypeCountFeaturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FeaturesWhereInput
 }
 
 /**
@@ -573,7 +573,7 @@ export type PlansSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdAt?: boolean
   updatedAt?: boolean
   prices?: boolean | Prisma.Plans$pricesArgs<ExtArgs>
-  featureLimits?: boolean | Prisma.Plans$featureLimitsArgs<ExtArgs>
+  features?: boolean | Prisma.Plans$featuresArgs<ExtArgs>
   subscriptions?: boolean | Prisma.Plans$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.PlansCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["plans"]>
@@ -602,7 +602,7 @@ export type PlansSelectScalar = {
 export type PlansOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["plans"]>
 export type PlansInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prices?: boolean | Prisma.Plans$pricesArgs<ExtArgs>
-  featureLimits?: boolean | Prisma.Plans$featureLimitsArgs<ExtArgs>
+  features?: boolean | Prisma.Plans$featuresArgs<ExtArgs>
   subscriptions?: boolean | Prisma.Plans$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.PlansCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -613,7 +613,7 @@ export type $PlansPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Plans"
   objects: {
     prices: Prisma.$PlanPricesPayload<ExtArgs>[]
-    featureLimits: Prisma.$FeatureLimitsPayload<ExtArgs>[]
+    features: Prisma.$FeaturesPayload<ExtArgs>[]
     subscriptions: Prisma.$SubscriptionsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1016,7 +1016,7 @@ readonly fields: PlansFieldRefs;
 export interface Prisma__PlansClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   prices<T extends Prisma.Plans$pricesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Plans$pricesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlanPricesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  featureLimits<T extends Prisma.Plans$featureLimitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Plans$featureLimitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeatureLimitsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  features<T extends Prisma.Plans$featuresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Plans$featuresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeaturesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   subscriptions<T extends Prisma.Plans$subscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Plans$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubscriptionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1477,27 +1477,27 @@ export type Plans$pricesArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 }
 
 /**
- * Plans.featureLimits
+ * Plans.features
  */
-export type Plans$featureLimitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Plans$featuresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the FeatureLimits
+   * Select specific fields to fetch from the Features
    */
-  select?: Prisma.FeatureLimitsSelect<ExtArgs> | null
+  select?: Prisma.FeaturesSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the FeatureLimits
+   * Omit specific fields from the Features
    */
-  omit?: Prisma.FeatureLimitsOmit<ExtArgs> | null
+  omit?: Prisma.FeaturesOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.FeatureLimitsInclude<ExtArgs> | null
-  where?: Prisma.FeatureLimitsWhereInput
-  orderBy?: Prisma.FeatureLimitsOrderByWithRelationInput | Prisma.FeatureLimitsOrderByWithRelationInput[]
-  cursor?: Prisma.FeatureLimitsWhereUniqueInput
+  include?: Prisma.FeaturesInclude<ExtArgs> | null
+  where?: Prisma.FeaturesWhereInput
+  orderBy?: Prisma.FeaturesOrderByWithRelationInput | Prisma.FeaturesOrderByWithRelationInput[]
+  cursor?: Prisma.FeaturesWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.FeatureLimitsScalarFieldEnum | Prisma.FeatureLimitsScalarFieldEnum[]
+  distinct?: Prisma.FeaturesScalarFieldEnum | Prisma.FeaturesScalarFieldEnum[]
 }
 
 /**
