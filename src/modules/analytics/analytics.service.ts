@@ -6,9 +6,6 @@ export class AnalyticsService {
 
     private _linkService?: LinkService;
 
-    private get linkService() {
-        return this._linkService ??= new LinkService();
-    }
 
     
     

@@ -1,4 +1,4 @@
-import { FeatureKey, Prisma, Subscriptions } from "../../../generated/prisma/client";
+import { FeatureKey, Plans, Prisma, Subscriptions } from "../../../generated/prisma/client";
 import { FeatureId } from "../../types";
 
 
@@ -40,4 +40,5 @@ export type FeatureState = Partial<
 
 export interface SubscriptionWithFeatures extends Subscriptions {
     features: FeatureState;
+    plan: Plans
 }

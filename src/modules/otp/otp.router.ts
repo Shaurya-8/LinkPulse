@@ -7,12 +7,12 @@ import { verify, resendOtp } from "./otp.controller"
 const otpRouter = Router();
 
 otpRouter.post('/verify',
-    validate(verifyOtpSchema, 'body'),
+    validate({ body: verifyOtpSchema.shape.body }),
     verify
 );
 
 otpRouter.post('/resend',
-    validate(resendOtpSchema, 'body'),
+    validate({ body: resendOtpSchema.shape.body }),
     resendOtp
 );
 

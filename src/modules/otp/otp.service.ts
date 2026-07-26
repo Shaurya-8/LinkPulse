@@ -1,9 +1,9 @@
 import { generateOtp, hashOtp, getOtpExpiry, generateSecureToken, verifyOtp } from "../../common/utils/crypto";
 import { cache, cacheKeys } from "../../config/redis";
-import { VerifyOtpDto, ResendOtpDto } from "./otp.schema";
+import { VerifyOtpInput, ResendOtpInput } from "./otp.schema";
 import { BadRequestError } from "../../common/errors/AppError"
-import { DeviceInfo, OtpPurpose, OtpSession, ResendOtpResult, UserId } from "../../types";
-import { resetPassword, sendVerificationEmail, verifyEmail } from "../auth/auth.service";
+import { DeviceInfo, OtpPurpose, OtpSession } from "../../types";
+import { resetPassword, verifyEmail } from "../auth/auth.service";
 import { OtpVerifyResult } from "../../types";
 import { config } from "../../config";
 import { otpTemplateFactory } from "../email/email.template";
@@ -24,8 +24,7 @@ export async function create(
 }
 
 
-
-export async function verify(dto: VerifyOtpDto, device: DeviceInfo): Promise<OtpVerifyResult> {
+export async function verify(dto: VerifyOtpInput, device: DeviceInfo): Promise<OtpVerifyResult> {
 
     const cachedOtp = await cache.get<string>(cacheKeys.otpVerify(dto.verificationId));
     if (!cachedOtp) throw new BadRequestError("OTP Expired");
@@ -46,7 +45,7 @@ export async function verify(dto: VerifyOtpDto, device: DeviceInfo): Promise<Otp
 }
 
 
-export async function resendOtp(dto: ResendOtpDto, device: DeviceInfo): Promise<void> {
+export async function resendOtp(dto: ResendOtpInput, device: DeviceInfo): Promise<void> {
     const otpSessionData = await cache.get<OtpSession>(cacheKeys.otpSessionData(dto.requestId));
     console.log("cachedData: ", otpSessionData);
     if (!otpSessionData || !otpSessionData.recipient) throw new BadRequestError("Session expired");

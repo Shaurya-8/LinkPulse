@@ -53,7 +53,8 @@ export class SessionsRepository {
     getWithUser(refreshToken: string, tx: DbClient = this.db) {
         return tx.sessions.findFirst({
             where: {
-                refreshToken
+                refreshToken,
+                isActive: true
             },
             select: sessionWithUserSelect
         })
@@ -73,17 +74,16 @@ export class SessionsRepository {
     }
 
 
-    getByAccessJti(accessJti: string, userId?: UserId, tx: DbClient = this.db) {
+    getByAccessJti(accessJti: string, tx: DbClient = this.db) {
         return tx.sessions.findFirst({
             where: {
                 accessJti,
-                userId,
                 isActive: true,
             }
         })
     }
 
-    getByAccessJtiWithUser(accessJti: string, userId?: UserId, tx: DbClient = this.db) {
+    getByAccessJtiWithUser(accessJti: string, userId: UserId, tx: DbClient = this.db) {
         return tx.sessions.findFirst({
             where: {
                 accessJti,

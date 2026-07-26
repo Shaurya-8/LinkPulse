@@ -1,7 +1,7 @@
 import { createApp } from "./app.js";
 import { Server } from 'http';
 import { config } from './config'
-import { logger } from './common/utils/logger'
+import { logger } from './common/utils/logger.js'
 import { connectdb, disconnectdb } from "./config/prisma";
 import { connectRedis, disconnectRedis } from "./config/redis.js";
 import { createEmailWorker, closeEmailWorker } from "./jobs/worker/email.worker.js";

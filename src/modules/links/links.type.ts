@@ -40,21 +40,21 @@ export interface LinkWithMeta {
   id: string;
   shortCode: string;
   shortUrl: string;
-  originalUrl: string;
+  longUrl: string;
   title?: string | null;
   description?: string | null;
-  status: string;
+  isActive: string;
   clickCount: number;
-  maxClicks?: number | null;
+  clickLimit?: number | null;
   isPasswordProtected: boolean;
   expiresAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  tags: Array<{ id: string; name: string; color: string }>;
-  qrCode?: {
-    pngUrl?: string | null;
-    svgData?: string | null;
-  } | null;
+  // tags: Array<{ id: string; name: string; color: string }>;
+  // qrCode?: {
+  //   pngUrl?: string | null;
+  //   svgData?: string | null;
+  // } | null;
 }
 
 

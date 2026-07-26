@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import * as authService from "./auth.service";
 import { successResponse } from "../../common/utils/response"
-import { RegisterDto } from "./auth.schema";
+import {
+    RegisterInput,
+    SendResetPasswordEmailInput,
+    RefreshTokenInput,
+    UpdateUserInput,
+    LoginInput,
+    DeleteInput,
+} from "./auth.schema";
 import { AccessToken, AuthenticatedRequest, JwtAccessPayload } from "../../types";
 import { DeviceInfo } from "../../types"
 import { BadRequestError, UnauthorizedError } from "../../common/errors/AppError";
@@ -26,7 +33,7 @@ function requireUser(req: Request): AuthenticatedRequest['user'] {
 
 
 export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const dto = req.body as RegisterDto;
+    const dto = req.validated.body as RegisterInput;
     try {
         const result = await authService.register(dto);
         successResponse(
@@ -43,7 +50,7 @@ export async function register(req: Request, res: Response, next: NextFunction):
 export async function login(req: Request, res: Response, next: NextFunction) {
     const device = requireDevice(req);
     try {
-        const result = await authService.login(req.body, device);
+        const result = await authService.login(req.validated.body as LoginInput, device);
 
         setAuthCookies(
             res, {
@@ -67,6 +74,7 @@ export async function logout(req: Request, res: Response, next: NextFunction) {
     try {
         const user = requireUser(req);
         const device = requireDevice(req);
+        console.log("user: ", user)
         await authService.logout(user.sub as UserId, user.refreshToken, device);
         clearAuthCookies(res);
         successResponse(res, null, 'User logout successfully', 204);
@@ -89,7 +97,6 @@ export async function resetPasswordRequest(req: Request, res: Response, next: Ne
 
 export async function refreshToken(req: Request, res: Response, next: NextFunction) {
     const device = requireDevice(req);
-
     try {
         const extractedRefreshToken = extractRefreshToken(req);
         if (!extractedRefreshToken) {
@@ -127,7 +134,7 @@ export async function logoutAll(req: Request, res: Response, next: NextFunction)
 export async function deleteUser(req: Request, res: Response, next: NextFunction) {
     const device = requireDevice(req);
     try {
-        const result = await authService.deleteUser(req.body);
+        const result = await authService.deleteUser(req.validated.body as DeleteInput);
         clearAuthCookies(res);
         successResponse(res, result, "User deleted successfully", 204);
     } catch (err) {

@@ -1,5 +1,5 @@
 import { DbClient } from "../../config/prisma";
-import {  SubscriptionId, UserId } from "../../types";
+import { SubscriptionId, UserId } from "../../types";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { FeatureService } from "../links/features/feature.service";
 import { FeatureUsedService } from "../links/features/featureLimitUsed/featureUsed-limit.service";
@@ -9,6 +9,10 @@ import { SubscriptionWithFeatures } from "../subscription/types";
 import { LinkService } from "../links/links.service";
 import { RedirectLinkAuthentication } from "./redirect-link.authorization";
 import { LinkWithRelations } from "../links/links.repository";
+import { Links, PlanType, UserRole } from "../../../generated/prisma/client";
+import { BadRequestError } from "../../common/errors/AppError";
+import { UpdataLinkAuthorization } from "./update-link.authorization";
+import { UpdateLinkInput } from "../links/links.schema";
 
 export class Authorization {
     cachedSubscription: SubscriptionWithFeatures | null = null;
@@ -53,5 +57,13 @@ export class Authorization {
         }
         return new RedirectLinkAuthentication(linkData).authorize(isPasswordVerified);
 
+    }
+
+    async updateLinkAuthorization(link: Links, userId: UserId, role: UserRole,input: UpdateLinkInput,tx?: DbClient) {
+        const subscritption = await this.getSubscription(userId);
+        if (subscritption.plan.name === PlanType.FREE) {
+            throw new BadRequestError('Feature not available');
+        }
+        return new UpdataLinkAuthorization(link).authorize(subscritption, role, input);
     }
 }

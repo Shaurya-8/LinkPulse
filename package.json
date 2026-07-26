@@ -57,6 +57,8 @@
     "morgan": "^1.11.0",
     "nodemailer": "^9.0.1",
     "pg": "^8.21.0",
+    "pnpm": "^11.15.1",
+    "rate-limiter-flexible": "^11.2.0",
     "ua-parser-js": "^2.0.10",
     "uuid": "^14.0.0",
     "winston": "^3.19.0",

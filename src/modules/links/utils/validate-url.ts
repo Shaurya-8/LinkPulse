@@ -36,10 +36,10 @@ const DEFAULT_OPTIONS: UrlValidationOptions = {
     maxLength: 2048,
 };
 
-export function validateUrl(
+export async function validateUrl(
     input: string,
     options: UrlValidationOptions = DEFAULT_OPTIONS,
-): URL {
+): Promise<URL> {
     const opts = { ...DEFAULT_OPTIONS, ...options };
 
     if (!input || typeof input !== "string") {

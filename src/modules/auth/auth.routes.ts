@@ -12,13 +12,13 @@ authRouter.use(deviceInfoMiddleware);
 
 authRouter.post("/register",
     rateLimiter.registerRateLimiter(),
-    validate(schema.registerSchema, "body"),
+    validate({ body: schema.registerSchema.shape.body }),
     controller.register
 );
 authRouter.post("/login",
     rateLimiter.loginRateLimiter(),
     rateLimiter.progressiveDelay(),
-    validate(schema.loginSchema, "body"),
+    validate({ body: schema.loginSchema.shape.body }),
     controller.login
 );
 authRouter.post("/refresh",
@@ -32,13 +32,13 @@ authRouter.post("/logout",
 
 authRouter.post("/send-reset-password-email",
     authenticate,
-    validate(schema.sendResetPasswordEmailSchema, "body"),
+    validate({ body: schema.sendResetPasswordEmailSchema.shape.body }),
     controller.resetPasswordRequest
 );
 
 authRouter.delete("/delete-user",
     authenticate,
-    validate(schema.deleteSchema, "body"),
+    validate({ body: schema.deleteSchema.shape.body }),
     controller.deleteUser
 );
 

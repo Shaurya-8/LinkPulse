@@ -4,20 +4,25 @@ import { cache, cacheKeys } from "../../config/redis";
 import { DeviceInfo, ParsedUserAgent, UserId } from "../../types";
 import { Authorization } from "../Authorization";
 import { LinkRepository } from "./links.repository";
-import { CreateLinkInput } from "./links.schema";
+import { CreateLinkInput, UpdateLinkInput } from "./links.schema";
 import { validateUrl } from "./utils/validate-url";
 import { normalizeUrl } from "./utils/normalize-url"
 import { generateSecureToken, hashPassword, verifyPassword } from "../../common/utils/crypto";
-import { Prisma } from "../../../generated/prisma/client";
+import { Links, PlanType, Prisma, UserRole } from "../../../generated/prisma/client";
 import { generateShortCode } from "./utils/generateShortCode"
 import { BadRequestError, ConflictError, NotFoundError } from "../../common/errors/AppError";
-import { config } from "../../config";
+import { config, link } from "../../config";
 import { LinkWithRelations } from "./links.repository";
-import { formatLink } from "./utils/formatLink";
+import { buildShortUrl, formatLink } from "./utils/formatLink";
 import { buildPaginationMeta } from "./utils/buildPaginateMetaData";
-import { GetLinksParams } from "./links.type";
+import { GetLinksParams, LinkWithMeta } from "./links.type";
 import { boolean } from "zod";
+import { UserRepository } from "../auth/auth.repository";
 
+type User = {
+    id: UserId,
+    role: UserRole,
+}
 
 export class LinkService {
     linkRepository = new LinkRepository(prisma);
@@ -25,13 +30,12 @@ export class LinkService {
     authorization = new Authorization();
 
     async create(dto: CreateLinkInput, device: DeviceInfo, userId?: UserId,) {
-        console.log(dto);
-        const url = validateUrl(dto.longUrl);
-        const normalizedUrl = normalizeUrl(dto.longUrl);
 
-        console.log("userId: ", userId)
+        const normalizedUrl = normalizeUrl(dto.longUrl);
+        await validateUrl(normalizedUrl);
+
         const result = await prisma.$transaction(async (tx) => {
-            if(userId){
+            if (userId) {
                 await this.authorization.createLinkAuthorization({ ...dto, userId: userId }, tx);
             }
 
@@ -92,7 +96,6 @@ export class LinkService {
         }
     }
 
-
     async getLinkByShortCode(shortCode: string, tx?: DbClient): Promise<{ data: LinkWithRelations | null }> {
         const cached = await cache.get<LinkWithRelations>(cacheKeys.shortLink(shortCode));
         if (cached) return { data: cached };
@@ -104,12 +107,113 @@ export class LinkService {
         return { data: result };
     }
 
+    async getLink(id: string, userId: UserId, device: DeviceInfo): Promise<{ data: Links }> {
+        const cached = await cache.get<Links>(cacheKeys.linkById(userId, id));
+        if (cached) return { data: cached };
+
+        const link = await this.linkRepository.findById(id, userId);
+
+        if (!link) {
+            throw new NotFoundError("Link");
+        }
+        return { data: link };
+    }
+
+
+    async updateLink(id: string, user: User, input: UpdateLinkInput, device: DeviceInfo): Promise<{ data: LinkWithMeta }> {
+
+
+        const exist = await this.linkRepository.findById(id, user.id);
+        if (!exist) {
+            throw new NotFoundError("Link")
+        }
+
+        await this.authorization.updateLinkAuthorization(exist, user.id, user.role, input);
+
+        if (input.password !== undefined) {
+            throw new BadRequestError('Password protection requires a Premium account');
+        }
+
+        if (input.longUrl) {
+            const normalized = normalizeUrl(input.longUrl);
+            await validateUrl(normalized);
+            input.longUrl = normalized;
+        }
+
+        let passwordHash: string | null | undefined;
+        if (input.password) {
+            passwordHash = await hashPassword(input.password);
+        }
+
+        const link = await this.linkRepository.update({
+            where: { id },
+            data: {
+                ...(input.longUrl !== undefined && {
+                    longUrl: input.longUrl,
+                }),
+
+                ...(input.title !== undefined && {
+                    title: input.title,
+                }),
+
+                ...(input.description !== undefined && {
+                    description: input.description,
+                }),
+
+                ...(passwordHash !== undefined && {
+                    passwordHash,
+                }),
+
+                ...(input.expiresAt !== undefined && {
+                    expiresAt: input.expiresAt ? new Date(input.expiresAt) : null,
+                }),
+
+                ...(input.clickLimit !== undefined && {
+                    clickLimit: input.clickLimit,
+                }),
+
+                ...(input.redirectType !== undefined && {
+                    redirectType: input.redirectType,
+                }),
+
+                ...(input.isActive !== undefined && {
+                    isActive: input.isActive,
+                }),
+
+                ...(input.isOneTime !== undefined && {
+                    isOneTime: input.isOneTime,
+                }),
+
+                ...(input.customAlias !== undefined && {
+                    customAlias: input.customAlias,
+                }),
+            }
+        });
+
+        cache.del(cacheKeys.shortLink(exist.shortCode));
+        cache.del(cacheKeys.linkById(user.id, id));
+        return { data: this.formatLink(link) };
+    }
+
+    async toggleLinkIsActive(id: string, userId: UserId, device: DeviceInfo): Promise<{ data: { isActive: boolean } }> {
+        const link = await this.linkRepository.findFirst({
+            where: { id, userId },
+            select: { id: true, isActive: true, shortCode: true },
+        });
+        if (!link) throw new BadRequestError('Link');
+
+        const isActive = link.isActive === true ? false : true;
+        await this.linkRepository.update({ where: { id }, data: { isActive: isActive as never } });
+        await cache.del(cacheKeys.shortLink(link.shortCode));
+        await cache.del(cacheKeys.linkById(userId, id));
+        return { data: { isActive } };
+    }
 
     // ─────────────────────────────────────────────
     // Get Links (paginated)
     // ─────────────────────────────────────────────
 
-    async getLinks(userId: string, query: GetLinksParams): Promise<{ data: object }> {
+    async getLinks(userId: UserId, query: GetLinksParams): Promise<{ data: object }> {
         const { page, limit, search, isActive, tag, sortBy, sortOrder } = query;
         const skip = (page - 1) * limit;
 
@@ -126,7 +230,6 @@ export class LinkService {
             // ...(tag && { tags: { some: { name: { equals: tag, mode: 'insensitive' as const } } } }),
         };
 
-        console.log("getlinks where  ", JSON.stringify(where, null, 2));
         const [total, links] = await Promise.all([
             this.linkRepository.count({ where }),
             this.linkRepository.findMany({
@@ -138,7 +241,6 @@ export class LinkService {
             }),
         ]);
 
-        console.log(links, " ", total, " ", page, " ", limit);
         return {
             data: {
                 links: links.map((l: Record<string, unknown>) => formatLink(l)),
@@ -147,15 +249,16 @@ export class LinkService {
         };
     }
 
-
-
     async deleteLink(id: string, userId: UserId): Promise<void> {
         const link = await this.linkRepository.findById(id, userId);
         if (!link) {
             throw new NotFoundError('link');
         }
+
         await this.linkRepository.deleteLink(id);
         await cache.del(cacheKeys.shortLink(link.shortCode));
+        await cache.del(cacheKeys.linkById(userId, link.shortCode));
+        return;
 
     }
 
@@ -164,6 +267,26 @@ export class LinkService {
         if (result) cache.del(cacheKeys.shortLink(result.shortCode));
         return result;
     }
+
+    private formatLink(link: Record<string, unknown>): LinkWithMeta {
+        return {
+            id: link.id as string,
+            shortCode: link.shortCode as string,
+            shortUrl: buildShortUrl(link.shortCode as string),
+            longUrl: link.longUrl as string,
+            title: (link.title ?? null) as string | null,
+            description: (link.description ?? null) as string | null,
+            isActive: link.isActive as string,
+            clickCount: (link.clickCount as number) ?? 0,
+            clickLimit: (link.clickLimit ?? null) as number | null,
+            isPasswordProtected: !!(link.passwordHash as string | null),
+            expiresAt: (link.expiresAt ?? null) as Date | null,
+            createdAt: link.createdAt as Date,
+            updatedAt: link.updatedAt as Date,
+        };
+    }
+
+    
 
 
 }

@@ -16,26 +16,31 @@ const sessionRepository = new SessionsRepository(prisma);
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
     try {
         const rawToken = extractAccessToken(req as any);
+        console.log("rawToken: ", rawToken)
         if (!rawToken) {
             throw new UnauthorizedError('Authentication required, please login.');
         }
 
         const payload = verifyToken<JwtAccessPayload>(rawToken, config.jwt.accessSecret, 'api');
+        console.log("payload: ", payload)
+        
         const isRevoked = await cache.exists(cacheKeys.revokedAccessToken(payload.jti));
+        console.log("isRevoked: ", isRevoked)
         if (isRevoked) {
             throw new UnauthorizedError('Token has been revoked. Please login again.');
         }
-
+        
         const session = await sessionRepository.getByAccessJti(payload.jti);
+        console.log("session: ",session);
         if (!session || !session.isActive) {
             throw new UnauthorizedError('Session is inactive or does not exist. Please login again.');
         }
-
+        
         sessionRepository.updateLastUsed(session.id)
-            .catch(err => {
-                logger.warn('Failed to update session last used timestamp:', err);
-            });
-
+        .catch(err => {
+            logger.warn('Failed to update session last used timestamp:', err);
+        });
+        
         (req as AuthenticatedRequest).user = {
             sub: payload.sub as UserId,
             email: payload.email,
@@ -43,6 +48,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
             sessionId: session.id as SessionId,
             role: payload.role
         };
+        
         next();
     } catch (err) {
         next(err);

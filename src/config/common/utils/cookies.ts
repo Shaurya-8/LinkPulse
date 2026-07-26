@@ -24,7 +24,7 @@ function parseDurationToMs(duration: string): number {
     const match = duration.match(/^(\d+)(m|h|d)$/);
     if (!match) return 15 * MS.MINUTE; // fallback: 15 minutes
 
-    const value = parseInt(match[1]!, 10);
+    const value = parseInt(match[1], 10);
     switch (match[2]) {
         case 'm': return value * MS.MINUTE;
         case 'h': return value * MS.HOUR;

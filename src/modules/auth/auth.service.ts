@@ -18,7 +18,7 @@ import {
     JwtAccessPayload
 } from "../../types";
 import { LoginResult, OtpPurpose, RegisterResult } from "../../types";
-import { RegisterDto, LoginDto, DeleteDto } from "./auth.schema";
+import { RegisterInput, LoginInput, DeleteInput } from "./auth.schema";
 
 import { logger } from "../../common/utils/logger";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../../common/errors/AppError"
@@ -95,7 +95,7 @@ async function activeSession(user: AuthUser, device: DeviceInfo, tx?: DbClient) 
     }
 }
 
-export async function register(dto: RegisterDto): Promise<RegisterResult> {
+export async function register(dto: RegisterInput): Promise<RegisterResult> {
     const { email, firstName, lastName, password } = dto;
 
     const exist = await db.findFirst({ where: { email: dto.email } });
@@ -184,7 +184,7 @@ export async function verifyEmail(requestId: string, device: DeviceInfo): Promis
 
 
 
-export async function login(dto: LoginDto, device: DeviceInfo): Promise<LoginResult> {
+export async function login(dto: LoginInput, device: DeviceInfo): Promise<LoginResult> {
     const user = await db.loginUser(dto.email);
 
     if (!user) throw new NotFoundError('user');
@@ -267,11 +267,15 @@ export async function logout(
 ): Promise<void> {
     // Revoke session in DB
     const revokedSession = await sessionService.revoke(refreshToken);
-    await cache.srem(cacheKeys.userSessions(userId));
+    console.log("revokedSession: ", revokedSession)
+    await cache.srem(cacheKeys.userSessions(userId), revokedSession.id);
     // Blocklist the access JTI in Redis (until access token expires ~15m)
     await cache.set(cacheKeys.revokedAccessToken(revokedSession.accessJti), '1', 15 * 60);
+    const isRevoked = await cache.exists(cacheKeys.revokedAccessToken(revokedSession.accessJti));
+    console.log("revokedSession: ", isRevoked)
 
     logger.info('User logged out', { userId, jti: revokedSession.accessJti });
+    return;
 }
 
 /**
@@ -323,7 +327,7 @@ export async function refreshToken(refreshToken: RefreshToken, device: DeviceInf
     }
 }
 
-export async function deleteUser(dto: DeleteDto): Promise<string> {
+export async function deleteUser(dto: DeleteInput): Promise<string> {
     const user = await db.findFirst({ where: { email: dto.email } });
 
     if (!user) throw new NotFoundError("user not found");

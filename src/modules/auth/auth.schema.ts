@@ -1,44 +1,68 @@
 import z, { email } from "zod";
 
+const passwordSchema = z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password must be at most 128 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+
 export const registerSchema = z.object({
-    email: z.email().toLowerCase().trim(),
-    password: z.string().trim(),
-    firstName: z.string().trim(),
-    lastName: z.string().trim().optional(),
-    avatarUrl: z.string().trim().optional()
+    body: z.object({
+
+        email: z.email().toLowerCase().trim(),
+        password: passwordSchema,
+        firstName: z.string().trim(),
+        lastName: z.string().trim().optional(),
+        avatarUrl: z.string().trim().optional()
+    })
 });
 
 export const updateUserSchema = z.object({
-    password: z.string().trim().optional(),
-    firstName: z.string().trim(),
-    lastName: z.string().trim().optional(),
-    avatarUrl: z.string().trim().optional()
+    body: z.object({
+        password: z.string().trim().optional(),
+        firstName: z.string().trim(),
+        lastName: z.string().trim().optional(),
+        avatarUrl: z.string().trim().optional()
+    })
 });
 
 
 export const loginSchema = z.object({
-    email: z.email().lowercase().trim(),
-    password: z.string().trim()
+    body: z.object({
+        email: z.email().lowercase().trim(),
+        password: z.string().trim()
+    })
 });
 
 
 export const deleteSchema = z.object({
-    email: z.string().trim(),
-    password: z.string().trim()
+    body: z.object({
+
+        email: z.string().trim(),
+        password: z.string().trim()
+    })
 })
 
 export const refreshTokenSchema = z.object({
-    refreshToken: z.string().trim(),
+    body: z.object({
+
+        refreshToken: z.string().trim(),
+    })
 });
 
 export const sendResetPasswordEmailSchema = z.object({
-    email: z.string().trim(),
-    newPassword: z.string().trim()
+    body: z.object({
+        email: z.string().trim(),
+        newPassword: z.string().trim()
+    })
 });
 
-export type SendResetPasswordEmailDto = z.infer<typeof sendResetPasswordEmailSchema>;
-export type RefreshTokenDto = z.infer<typeof refreshTokenSchema>;
-export type RegisterDto = z.infer<typeof registerSchema>;
-export type UpdateUserDto = z.infer<typeof updateUserSchema>;
-export type LoginDto = z.infer<typeof loginSchema>;
-export type DeleteDto = z.infer<typeof deleteSchema>;
+export type SendResetPasswordEmailInput = z.infer<typeof sendResetPasswordEmailSchema>['body'];
+export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>['body'];
+export type RegisterInput = z.infer<typeof registerSchema>['body'];
+export type UpdateUserInput = z.infer<typeof updateUserSchema>['body'];
+export type LoginInput = z.infer<typeof loginSchema>['body'];
+export type DeleteInput = z.infer<typeof deleteSchema>['body'];

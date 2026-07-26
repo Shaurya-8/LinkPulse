@@ -120,10 +120,10 @@ export class LinkRepository {
 
   findById(id: string, userId: UserId, tx?: DbClient) {
     return this.findFirst({
-      where: { id, userId },
-      include: linkInclude
+      where: { id, userId }, 
     })
   }
+
 
   deleteLink(id: string, tx?: DbClient) {
     return this.delete({
