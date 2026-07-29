@@ -77,7 +77,7 @@ export function setAuthCookies(res: Response, payload: AuthCookiePayload): void 
     // ── refresh_token ───────────────────────────────────────────────────────────
     res.cookie(COOKIE_NAMES.REFRESH_TOKEN, payload.refreshToken, {
         ...baseOptions(),
-        path: '/',
+        path: '/api/v1/auth/refresh',
         maxAge: refreshTtlMs,
     });
 
@@ -98,16 +98,15 @@ export function setAuthCookies(res: Response, payload: AuthCookiePayload): void 
  * Call this from: logout, logoutAll handlers.
  */
 export function clearAuthCookies(res: Response): void {
-     console.trace('clearAuthCookies called');
     const clearOptions: CookieOptions = {
         ...baseOptions(),
         maxAge: 0,  // Expires immediately
         expires: new Date(0),
     };
 
-    res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, { ...clearOptions, path: '/api' });
+    res.clearCookie(COOKIE_NAMES.ACCESS_TOKEN, { ...clearOptions, path: '/' });
     res.clearCookie(COOKIE_NAMES.REFRESH_TOKEN, { ...clearOptions, path: '/api/v1/auth/refresh' });
-    res.clearCookie(COOKIE_NAMES.SESSION_ID, { ...clearOptions, path: '/api' });
+    res.clearCookie(COOKIE_NAMES.SESSION_ID, { ...clearOptions, path: '/' });
 }
 
 

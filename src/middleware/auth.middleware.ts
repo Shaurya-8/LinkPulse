@@ -16,22 +16,18 @@ const sessionRepository = new SessionsRepository(prisma);
 export async function authenticate(req: Request, res: Response, next: NextFunction) {
     try {
         const rawToken = extractAccessToken(req as any);
-        console.log("rawToken: ", rawToken)
         if (!rawToken) {
             throw new UnauthorizedError('Authentication required, please login.');
         }
 
         const payload = verifyToken<JwtAccessPayload>(rawToken, config.jwt.accessSecret, 'api');
-        console.log("payload: ", payload)
         
         const isRevoked = await cache.exists(cacheKeys.revokedAccessToken(payload.jti));
-        console.log("isRevoked: ", isRevoked)
         if (isRevoked) {
             throw new UnauthorizedError('Token has been revoked. Please login again.');
         }
         
         const session = await sessionRepository.getByAccessJti(payload.jti);
-        console.log("session: ",session);
         if (!session || !session.isActive) {
             throw new UnauthorizedError('Session is inactive or does not exist. Please login again.');
         }
@@ -58,7 +54,6 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
 
 export async function optionalAuthenticate(req: Request, res: Response, next: NextFunction) {
     const rawToken = extractAccessToken(req as any);
-    console.log("From middleware: ", req.url);
     if (!rawToken) {
         return next();
     }

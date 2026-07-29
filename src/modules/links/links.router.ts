@@ -3,6 +3,7 @@ import { linksController } from './links.controller';
 import { authenticate, optionalAuthenticate } from '../../middleware/auth.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import { createLink, getLinkById, getLinks, updateLink } from './links.schema';
+import { rateLimiter } from "../../middleware/rate-limiter"
 
 const router = Router()
 
@@ -26,7 +27,7 @@ router.patch('/:id/toggle', authenticate, linksController.toggleStatus);
 
 
 // Premium-only routes
-// router.put('/:id/rules',    authenticate, requirePremium, validate({ params: redirectRuleSchema.shape.params, body: redirectRuleSchema.shape.body }), linksController.setRedirectRules);
+// router.put('/:id/rules', authenticate, requirePremium, validate({ params: redirectRuleSchema.shape.params, body: redirectRuleSchema.shape.body }), linksController.setRedirectRules);
 // router.post('/:id/ab-test', authenticate, requirePremium, validate({ params: abTestSchema.shape.params, body: abTestSchema.shape.body }), linksController.createAbTest);
 // router.post('/bulk',        authenticate, requirePremium, validate({ body: bulkCreateSchema.shape.body }), linksController.bulkCreate);
 

@@ -15,10 +15,13 @@ import { deviceInfoMiddleware } from "./middleware/deviceInfo.middleware";
 import { authRouter } from "./modules/auth/auth.routes";
 import { otpRouter } from "./modules/otp/otp.router";
 import { linkRouter } from "./modules/links/links.router";
-import {redirectRouter} from "./modules/links/redirect/redirect.router"
+import { redirectRouter } from "./modules/links/redirect/redirect.router"
 import { getQueueHealth } from "./jobs/queues";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
 import { analyticsRouter } from "./modules/analytics/analytics.router";
+
+import { limiter } from "./middleware/rate-limiter";
+import { policies } from "./middleware/rate-limiter/rate-limiter.policy";
 
 
 export async function createApp(): Promise<Application> {
@@ -35,7 +38,7 @@ export async function createApp(): Promise<Application> {
             }
         )
     );
-   
+
 
     app.set('trust-proxy', 1);
 
@@ -120,7 +123,8 @@ export async function createApp(): Promise<Application> {
     });
 
 
-    app.use(globalRateLimiter());
+    app.use(limiter(policies.global));
+    // app.use(globalRateLimiter());
     app.use(deviceInfoMiddleware);
 
 
