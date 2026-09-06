@@ -1,0 +1,653 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["fullTextSearchPostgres", "relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum DeviceType {
+  DESKTOP
+  MOBILE
+  TABLET
+  BOT
+  UNKNOWN
+}
+
+enum AuditAction {
+  REGISTER
+  LOGIN_SUCCESS
+  LOGIN_FAIL
+  LOGOUT
+  LOGOUT_ALL
+  TOKEN_REFRESHED
+  TOKEN_REVOKED
+  EMAIL_VERIFIED
+  PASSWORD_CHANGED
+  PASSWORD_RESET_REQUEST
+  PASSWORD_RESET_SUCCESS
+  DEVICE_TRUSTED
+  DEVICE_REMOVED
+  SESSION_EXPIRED
+  RATE_LIMIT_HIT
+}
+
+// ─────────────────────────────────────────────
+// Redirect
+// ─────────────────────────────────────────────
+enum RedirectType {
+  TEMPORARY
+  PERMANENT
+}
+
+enum ConditionType {
+  DEVICE
+  GEO
+  LANGUAGE
+  TIME_OF_DAY
+  DAY_OF_WEEK
+  DATE_RANGE
+}
+
+//Features
+enum FeatureKey {
+  CREATE_LINK
+  CUSTOM_ALIAS
+  PASSWORD_PROTECTION
+  LINK_EXPIRATION
+  ONE_TIME_LINKS
+  QR_CODE
+  CUSTOM_DOMAIN
+}
+
+//plan enum
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  TRIAL
+  PAUSED
+}
+
+enum PlanType {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+enum BillingPeriod {
+  MONTHLY
+  YEARLY
+}
+
+model Countries {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+  code String @unique @db.VarChar(2)
+}
+
+model Users {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.Text
+  role         UserRole @default(USER)
+  firstName    String   @map("first_name") @db.VarChar(100)
+  lastName     String?  @map("last_name") @db.VarChar(100)
+
+  status        UserStatus @default(PENDING)
+  emailVerified Boolean    @default(false) @map("email_verified")
+  avatarUrl     String?    @map("avatar_url")
+
+  lastLoginAt      DateTime? @map("last_login_at") @db.Timestamptz
+  loginCount       Int       @default(0)
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime? @db.Timestamptz
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  sessions       Sessions[]
+  devices        UserDevices[]
+  auditLogs      AuditLogs[]
+  passwordResets PasswordResetToken[]
+  subscriptions  Subscriptions[]
+
+  links      Links[]
+  collection LinkCollections[]
+
+  // Team invitation relationship
+  sentInvitations TeamInvitations[] @relation("InvitationSender")
+
+  // TeamMembers relationships
+  teamMemberships TeamMembers[] @relation("TeamMembership")
+  teamMembers     TeamMembers[] @relation("TeamMemberInviter")
+
+  // Teams ownership
+  ownedTeams Teams[] @relation("TeamOwner")
+
+  webhooks Webhooks[]
+  apiKeys  ApiKeys[]
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([lastLoginAt])
+  @@index([emailVerified, createdAt])
+  @@map("users")
+}
+
+model Sessions {
+  id        String  @id @default(uuid()) @db.Uuid
+  userId    String  @map("user_id") @db.Uuid
+  deviceId  String? @map("device_id") @db.Uuid
+  ipAddress String? @db.VarChar(45)
+
+  refreshToken String @unique @map("refresh_token") @db.Char(64)
+  accessJti    String @unique @map("access_jti") @db.Uuid
+
+  userAgent String? @map("user_agent") @db.VarChar(512)
+
+  city String? @db.VarChar(100)
+
+  isActive   Boolean      @default(true) @map("is_active")
+  expiresAt  DateTime     @map("expires_at") @db.Timestamptz
+  lastUsedAt DateTime     @default(now()) @map("last_used_at") @db.Timestamptz
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  revokedAt  DateTime?    @map("revoked_at") @db.Timestamptz
+  user       Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device     UserDevices? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isActive, expiresAt])
+  @@index([userId, isActive])
+  @@index([expiresAt])
+  @@index([lastUsedAt])
+  @@map("sessions")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash") @db.Char(64) // SHA-256
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  usedAt    DateTime? @map("used_at") @db.Timestamptz
+  ipAddress String?   @map("ip_address") @db.VarChar(45)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([tokenHash, usedAt, expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model UserDevices {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+
+  deviceFingerprint String  @map("device_fingerprint") @db.Char(64)
+  ipAddress         String?
+
+  deviceName     String?    @map("device_name") @db.VarChar(200)
+  deviceType     DeviceType @default(UNKNOWN) @map("device_type")
+  os             String?    @db.VarChar(100)
+  osVersion      String?    @map("os_version") @db.VarChar(50)
+  browser        String?    @db.VarChar(100)
+  browserVersion String?    @map("browser_version") @db.VarChar(20)
+  cpu            String?    @db.VarChar(50)
+  userAgent      String?    @map("user_agent") @db.VarChar(512)
+
+  isTrusted     Boolean @default(false) @map("is_trusted")
+  isPushEnabled Boolean @default(false) @map("is_push_enabled")
+  pushToken     String? @map("push_token") @db.VarChar(512)
+
+  loginCount Int @default(1) @map("login_count")
+
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sessions Sessions[]
+
+  @@unique([userId, deviceFingerprint])
+  @@index([lastSeenAt])
+  @@map("user_devices")
+}
+
+model AuditLogs {
+  id         String      @id @default(uuid()) @db.Uuid
+  userId     String?     @map("user_id") @db.Uuid
+  action     AuditAction
+  sessionId  String?     @map("session_id") @db.Uuid
+  ipAddress  String?     @map("ip_address") @db.VarChar(45)
+  userAgent  String?     @map("user_agent") @db.VarChar(512)
+  country    String?     @db.VarChar(2)
+  metadata   Json?       @db.JsonB
+  success    Boolean     @default(true)
+  errorCode  String?     @map("error_code") @db.VarChar(100)
+  errorMsg   String?     @map("error_msg") @db.VarChar(512)
+  durationMs Int?        @map("duration_ms") // request processing time in ms
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  user Users? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([action, createdAt(sort: Desc)])
+  @@index([ipAddress, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([sessionId])
+  @@map("audit_logs")
+}
+
+model Links {
+  id            String  @id @default(uuid()) @db.Uuid
+  shortCode     String  @unique @map("short_code")
+  customAlias   String? @unique @map("custom_alias")
+  longUrl       String  @map("long_url")
+  normalizedUrl String  @map("normalized_url")
+
+  isOneTime Boolean @default(false) @map("is_one_time")
+
+  title       String? @db.VarChar(256)
+  description String? @db.VarChar(512)
+  faviconUrl  String?
+
+  isActive Boolean @default(true) @map("is_active")
+
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  redirectType RedirectType @default(TEMPORARY)
+
+  clickCount Int @default(0)
+
+  passwordHash String? @map("password_hash")
+  clickLimit   Int     @default(1000) @map("click_limit")
+  userId       String? @map("user_id") @db.Uuid
+
+  user Users? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  clicks        Clicks[]
+  redirectRules RedirectRule[]
+  abTests       ABTest[]
+
+  collectionItems LinkCollectionItems[]
+
+  team Teams[]
+
+  @@index([isActive, expiresAt])
+  @@index([userId, isActive, expiresAt])
+  @@index([userId, expiresAt])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("links")
+}
+
+model Clicks {
+  id         String     @id @default(uuid()) @db.Uuid
+  linkId     String     @map("link_id") @db.Uuid
+  ipAddress  String?    @map("ip_address") @db.VarChar(45)
+  userAgent  String?    @map("user_agent") @db.VarChar(512)
+  referer    String?
+  city       String?    @db.VarChar(100)
+  deviceType DeviceType @default(UNKNOWN) @map("device_type")
+  browser    String?    @db.VarChar(100)
+  os         String?    @db.VarChar(100)
+  clickedAt  DateTime   @default(now())
+  isBot      Boolean    @default(false)
+
+  link Links @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([clickedAt])
+  @@index([linkId, clickedAt(sort: Desc)])
+  @@index([linkId, isBot, clickedAt(sort: Desc)])
+  @@map("link_clicks")
+}
+
+// ─────────────────────────────────────────────
+// ADVANCED REDIRECTION (PREMIUM)
+// ─────────────────────────────────────────────
+
+model RedirectRule {
+  id       String  @id @default(uuid()) @db.Uuid
+  linkId   String  @db.Uuid
+  priority Int     @default(0)
+  isActive Boolean @default(true)
+
+  conditionType  ConditionType
+  conditionValue String // JSON: { values: string[], operator: 'includes'|'equals' }
+
+  targetUrl String
+  label     String?
+
+  link Links @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId])
+  @@map("redirect_rules")
+}
+
+model ABTest {
+  id       String  @id @default(uuid()) @db.Uuid
+  linkId   String  @db.Uuid
+  name     String
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants ABTestVariant[]
+  link     Links           @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId])
+  @@map("ab_tests")
+}
+
+model ABTestVariant {
+  id     String @id @default(uuid()) @db.Uuid
+  testId String @db.Uuid
+  name   String
+  url    String
+  weight Int    @default(50) // 0–100
+  clicks Int    @default(0)
+
+  test ABTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@index([testId])
+  @@map("ab_test_variants")
+}
+
+model Plans {
+  id   String   @id @default(uuid()) @db.Uuid
+  name PlanType @unique
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  prices        PlanPrices[]
+  features      Features[]
+  subscriptions Subscriptions[]
+
+  @@map("plans")
+}
+
+model PlanPrices {
+  id String @id @default(uuid()) @db.Uuid
+
+  planId String @map("plan_id") @db.Uuid
+
+  billingPeriod BillingPeriod @map("billing_period")
+  price         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD") @db.VarChar(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  plan Plans @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  subscriptions Subscriptions[]
+
+  @@unique([planId, billingPeriod])
+  @@index([planId])
+  @@map("plan_prices")
+}
+
+model Subscriptions {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId      String  @map("user_id") @db.Uuid
+  planId      String  @map("plan_id") @db.Uuid
+  planPriceId String? @map("plan_price_id") @db.Uuid
+
+  status SubscriptionStatus @default(ACTIVE)
+
+  startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  expiresAt   DateTime? @map("expires_at") @db.Timestamptz
+  cancelledAt DateTime? @map("cancelled_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan Plans @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  planPrice PlanPrices? @relation(fields: [planPriceId], references: [id])
+
+  featureUsage FeatureUsages[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([planId])
+  @@index([planPriceId])
+  @@map("subscriptions")
+}
+
+model Features {
+  id String @id @default(uuid()) @db.Uuid
+
+  planId     String     @map("plan_id") @db.Uuid
+  featureKey FeatureKey
+  limitValue Int
+
+  plan Plans @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, featureKey])
+  @@index([planId])
+  @@map("feature_limits")
+}
+
+model FeatureUsages {
+  id String @id @default(uuid()) @db.Uuid
+
+  subscriptionId String     @map("subscription_id") @db.Uuid
+  featureKey     FeatureKey @map("feature_key")
+
+  currentUsed Int @default(0) @map("current_used")
+
+  subscription Subscriptions @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, featureKey])
+  @@index([subscriptionId])
+  @@map("feature_limit_usages")
+}
+
+// Team
+model Teams {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  ownerId     String   @map("owner_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  owner       Users             @relation("TeamOwner", fields: [ownerId], references: [id])
+  members     TeamMembers[]
+  invitations TeamInvitations[]
+  links       Links[]
+
+  @@index([ownerId])
+  @@index([slug])
+  @@map("teams")
+}
+
+model TeamMembers {
+  id        String    @id @default(uuid()) @db.Uuid
+  teamId    String    @db.Uuid @map("team_id")
+  userId    String    @db.Uuid @map("user_id")
+  role      UserRole  @default(USER)
+  invitedBy String?   @db.Uuid @map("invited_by")
+  joinedAt  DateTime  @default(now()) @map("joined_at")
+
+  team Teams @relation(fields: [teamId],references: [id],onDelete: Cascade)
+
+  user Users @relation("TeamMembership",fields: [userId],references: [id],onDelete: Cascade)
+
+  inviter Users? @relation("TeamMemberInviter",fields: [invitedBy],references: [id],    onDelete: SetNull)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+  @@index([invitedBy])
+
+  @@map("team_members")
+}
+
+model TeamInvitations {
+  id         String    @id @default(uuid()) @db.Uuid
+  teamId     String    @db.Uuid @map("team_id")
+  email      String
+  role       UserRole  @default(USER)
+  tokenHash  String    @unique @map("token_hash")
+  invitedBy  String    @db.Uuid @map("invited_by")
+  expiredAt  DateTime  @map("expired_at")
+  acceptedAt DateTime? @map("accepted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  team    Teams @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviter Users @relation("InvitationSender", fields: [invitedBy], references: [id], onDelete: Cascade  )
+
+  @@index([teamId])
+  @@index([email])
+
+  @@map("team_invitations")
+}
+model ApiKeys {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  name       String
+  keyHash    String    @unique @map("key_hash")
+  keyPrefix  String    @map("key_prifix")
+  isActive   Boolean   @default(true) @map("is_active")
+  lastusedAt DateTime? @map("lastused_at")
+  createdAt  DateTime  @default(now()) @map("updated_at")
+  updatedAt  DateTime  @updatedAt @map("created_at")
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyHash])
+  @@map("api_keys")
+}
+
+model LinkCollections {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String
+  description String?
+  color       String   @default("@6366f1")
+  isPublic    Boolean  @default(false) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user  Users                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items LinkCollectionItems[]
+
+  @@index([userId])
+  @@map("link_collections")
+}
+
+model LinkCollectionItems {
+  id           String          @id @default(uuid()) @db.Uuid
+  collectionId String          @map("collection_id") @db.Uuid
+  linkId       String          @map("link_id") @db.Uuid
+  addedAt      DateTime        @default(now()) @map("added_at")
+  collection   LinkCollections @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  link         Links           @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, linkId])
+  @@map("link_collection_items")
+}
+
+
+model BulkJob {
+  id         String        @id @default(cuid())
+  userId     String
+  status     BulkJobStatus @default(PENDING)
+  totalLinks Int           @default(0)
+  processed  Int           @default(0)
+  failed     Int           @default(0)
+  resultData String?
+  errorLog   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([status])
+  @@map("bulk_jobs")
+}
+
+// webhooks
+model Webhooks {
+  id       String   @id @default(uuid()) @db.Uuid
+  userId   String   @map("user_id") @db.Uuid
+  name     String
+  url      String
+  secret   String // Raw secret used for HMAC_SHA256 signing
+  event    String[] // Subscribed event types e.g. ["link.created", "link.cliked"]
+  isActive Boolean  @default(true) @map("is_active")
+
+  totalDeliveries       Int       @default(0) @map("total_deliveries")
+  successfullDeliveries Int       @default(0) @map("successfull_deliveries")
+  failedDeliveries      Int       @default(0) @map("failed_deliveries")
+  lastTriggeredAt       DateTime? @map("last_triggered_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user       Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries WebhookDeliveries[]
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("webhooks")
+}
+
+model WebhookDeliveries {
+  id           String    @id @default(uuid()) @db.Uuid
+  webhookId    String    @db.Uuid
+  eventType    String
+  payload      String //JSON body sent
+  statusCode   Int?      @map("status_code")
+  responseBody String?    @map("response_body")
+  attempt      Int       @default(1)
+  success      Boolean   @default(false)
+  error        String?
+  duration_ms  Int
+  delivedAt    DateTime? @map("delived_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  webhook Webhooks @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("webhook_deliveries")
+}

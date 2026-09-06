@@ -1,1 +1,0 @@
-{"version":3,"file":"update-link.authorization.js","sourceRoot":"","sources":["../../../../src/modules/Authorization/update-link.authorization.ts"],"names":[],"mappings":"AAGA,MAAM,OAAO,uBAAuB;IACH;IAA7B,YAA6B,IAAW;QAAX,SAAI,GAAJ,IAAI,CAAO;IAAI,CAAC;IAC7C,SAAS,CAAC,YAA2B,EAAE,IAAc,EAAE,MAAuB;QAE1E,OAAO,IAAI,CAAA;IACf,CAAC;CACJ"}
