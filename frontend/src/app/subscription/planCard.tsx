@@ -10,6 +10,7 @@ import {
 
 import { formatPrice } from './utils';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
 
 
 
@@ -19,6 +20,7 @@ export function PlanCard({ plan, isCurrentPlan }: PlanCardProps) {
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const price = formatPrice(plan);
     const PlanIcon = plan.icon;
+    const router = useRouter()
 
     const isCurrent = isCurrentPlan;
     const isLoading = actionLoading === plan.id;
@@ -33,10 +35,10 @@ export function PlanCard({ plan, isCurrentPlan }: PlanCardProps) {
         : plan.badge;
 
 
-    const {} = useMutation({
+    const {data} = useMutation({
         mutationFn: async () => {
             // Simulate async — swap for real Stripe / billing API call     
-    },
+    },});
   
     // ── Handle CTA clicks ────────────────────────────────────────────────────────
     async function handlePlanAction(plan: SubscriptionPlan) {
